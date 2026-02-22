@@ -129,7 +129,7 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
 .timer-num { font-family:'DM Mono',monospace; font-size:1.3em; font-weight:500; color:var(--accent); min-width:28px; transition:color 0.3s; }
 .timer-num.urgent { color:var(--accent2); }
 .progress-track { flex:1; height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
-.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:width 1s linear, background 0.3s; }
+.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:background 0.3s; }
 .progress-fill.urgent { background:var(--accent2); }
 
 /* country block */
@@ -203,6 +203,171 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
 .reveal-points-label { font-family:'DM Mono',monospace; font-size:0.8em; color:var(--muted); margin-bottom:20px; letter-spacing:0.1em; }
 .reveal-skip { font-family:'DM Mono',monospace; font-size:0.75em; color:var(--muted); background:none; border:1px solid var(--border); border-radius:6px; padding:8px 20px; cursor:pointer; transition:all 0.15s; }
 .reveal-skip:hover { color:var(--text); border-color:var(--muted); }
+
+
+.btn-hardcore {
+  display:block; width:100%;
+  padding:14px 20px; border-radius:10px;
+  background: linear-gradient(135deg, #3a0010, #7a0020);
+  border: 1px solid #ff3d5a;
+  color: #ff8fa0; font-family:'Syne',sans-serif;
+  font-size:1em; font-weight:700; cursor:pointer;
+  letter-spacing:0.04em; transition:all 0.2s;
+  position:relative; overflow:hidden;
+  box-shadow: 0 0 18px rgba(255,61,90,0.15);
+}
+.btn-hardcore:hover {
+  background: linear-gradient(135deg, #550018, #aa0030);
+  color:#fff; border-color:#ff6080;
+  box-shadow: 0 0 30px rgba(255,61,90,0.35);
+  transform:translateY(-2px);
+}
+/* no emoji prefix */
+
+
+/* ── End reveal screen ── */
+#end-reveal-screen {
+  position:fixed; inset:0; z-index:700;
+  background:var(--bg);
+  display:none;
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; transition:opacity 0.4s;
+}
+#end-reveal-screen.visible { opacity:1; }
+
+.reveal-title-big {
+  font-family:'Syne',sans-serif; font-size:1em; font-weight:700;
+  color:var(--muted); letter-spacing:0.15em; text-transform:uppercase;
+  margin-bottom:24px;
+}
+body.hardcore-ended #end-reveal-screen { background:#0d0608; }
+body.hardcore-ended .reveal-title-big { color:#ff3d5a; }
+
+.reveal-rows {
+  width:100%; max-width:440px;
+  display:flex; flex-direction:column; gap:8px;
+  margin-bottom:24px;
+}
+
+.reveal-row {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--border);
+  opacity:0; transform:translateX(-18px);
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  font-family:'DM Mono',monospace;
+}
+.reveal-row.shown { opacity:1; transform:translateX(0); }
+.reveal-row.penalty-row { border-color:var(--accent2); }
+body.hardcore-ended .reveal-row { background:#1c0e11; border-color:#2e1018; }
+body.hardcore-ended .reveal-row.penalty-row { border-color:#ff3d5a; }
+
+.rr-flag { font-size:1.5em; flex-shrink:0; }
+.rr-info { flex:1; min-width:0; }
+.rr-name { font-size:0.75em; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-cat  { font-size:0.65em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-pts  { font-size:1em; font-weight:800; flex-shrink:0; color:var(--accent); }
+.rr-pts.penalty { color:var(--accent2); }
+body.hardcore-ended .rr-pts { color:#ff3d5a; }
+
+.reveal-running-score {
+  font-family:'Syne',sans-serif; font-size:3.5em; font-weight:800;
+  color:var(--accent); line-height:1;
+  transition:color 0.2s;
+}
+body.hardcore-ended .reveal-running-score { color:#ff3d5a; }
+.reveal-running-label {
+  font-family:'DM Mono',monospace; font-size:0.7em; color:var(--muted);
+  letter-spacing:0.1em; text-transform:uppercase; margin-top:6px;
+}
+
+@keyframes scorePop {
+  0%   { transform:scale(1); }
+  40%  { transform:scale(1.18); }
+  100% { transform:scale(1); }
+}
+.score-pop { animation: scorePop 0.25s ease; }
+
+
+/* ── Countdown overlay ── */
+#countdown-overlay {
+  position:fixed; inset:0; z-index:800;
+  display:none; align-items:center; justify-content:center;
+  background:var(--bg); flex-direction:column; gap:12px;
+}
+#countdown-overlay.active { display:flex; }
+.countdown-num {
+  font-family:'Syne',sans-serif; font-size:8em; font-weight:800;
+  color:var(--accent); line-height:1;
+  animation: cdPop 0.85s cubic-bezier(0.34,1.56,0.64,1);
+}
+body.hardcore #countdown-overlay { background:#0d0608; }
+body.hardcore .countdown-num { color:#ff3d5a; text-shadow:0 0 40px rgba(255,61,90,0.5); }
+@keyframes cdPop {
+  0%   { transform:scale(0.3); opacity:0; }
+  60%  { transform:scale(1.1); opacity:1; }
+  100% { transform:scale(1);   opacity:1; }
+}
+@keyframes cdFadeOut {
+  0%   { opacity:1; transform:scale(1); }
+  100% { opacity:0; transform:scale(1.5); }
+}
+.countdown-num.fadeout { animation: cdFadeOut 0.3s ease forwards; }
+.countdown-sub { font-family:'DM Mono',monospace; font-size:0.8em; color:var(--muted); letter-spacing:0.15em; }
+/* ── Custom button ── */
+.btn-custom {
+  display:block; width:100%; padding:14px 20px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--accent3);
+  color:var(--accent3); font-family:'Syne',sans-serif; font-size:1em;
+  font-weight:700; cursor:pointer; letter-spacing:0.04em; transition:all 0.2s;
+}
+.btn-custom:hover { background:rgba(167,139,250,0.12); box-shadow:0 0 20px rgba(167,139,250,0.2); transform:translateY(-2px); }
+/* ── Custom panel ── */
+.custom-section { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px; }
+.custom-label { font-family:'DM Mono',monospace; font-size:0.72em; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; display:block; }
+.custom-value-display { font-family:'Syne',sans-serif; font-size:2em; font-weight:800; color:var(--accent3); text-align:center; margin:8px 0; }
+.custom-slider { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px; background:var(--border); outline:none; cursor:pointer; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent3); cursor:pointer; box-shadow:0 0 8px rgba(167,139,250,0.4); }
+.custom-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; border:none; background:var(--accent3); cursor:pointer; }
+.time-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.time-pill { padding:6px 14px; border-radius:99px; cursor:pointer; font-family:'DM Mono',monospace; font-size:0.75em; font-weight:700; border:1px solid var(--border); color:var(--muted); background:var(--surface); transition:all 0.15s; }
+.time-pill.active { border-color:var(--accent3); color:var(--accent3); background:rgba(167,139,250,0.1); box-shadow:0 0 8px rgba(167,139,250,0.2); }
+
+
+/* ── Draft mode selector in custom panel ── */
+.draft-pills { display:flex; gap:10px; margin-top:10px; }
+.draft-pill {
+  flex:1; padding:10px 8px; border-radius:10px; cursor:pointer;
+  font-family:'DM Mono',monospace; font-size:0.72em; font-weight:700;
+  border:1px solid var(--border); color:var(--muted);
+  background:var(--surface); transition:all 0.2s;
+  text-align:center; line-height:1.5;
+}
+.draft-pill span.dp-icon { display:block; font-size:1.8em; margin-bottom:4px; }
+.draft-pill span.dp-label { display:block; }
+.draft-pill.active {
+  border-color:var(--accent3); color:var(--accent3);
+  background:rgba(167,139,250,0.1);
+  box-shadow:0 0 10px rgba(167,139,250,0.2);
+}
+.draft-info-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--border); color:var(--muted);
+  font-family:'DM Mono',monospace; font-size:0.65em; font-weight:700;
+  cursor:pointer; margin-left:6px; vertical-align:middle;
+  border:none; transition:all 0.15s;
+}
+.draft-info-btn:hover { background:var(--accent3); color:var(--bg); }
+.draft-tooltip {
+  display:none; margin-top:10px; padding:10px 12px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; font-family:'DM Mono',monospace; font-size:0.68em;
+  color:var(--muted); line-height:1.6;
+}
+.draft-tooltip.visible { display:block; }
 
 .hidden { display:none !important; }
 
@@ -356,26 +521,7 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
     <div id="loader"><div class="dot-spin"></div>&nbsp;<span data-i18n="loading"></span></div>
     <div id="setup-ready" class="hidden">
 
-      <!-- MODE SELECTOR -->
-      <div class="mode-grid">
-        <div class="mode-card mode-card-normal selected" id="mode-card-normal" onclick="selectMode('normal')">
-          <span class="mode-badge mode-badge-normal" data-i18n="modeNormalBadge"></span>
-          <span class="mode-icon">🌍</span>
-          <div class="mode-title mode-title-normal" data-i18n="modeNormalTitle"></div>
-          <div class="mode-desc" data-i18n="modeNormalDesc"></div>
-          <span class="mode-check mode-check-normal">✓</span>
-        </div>
-        <div class="mode-card mode-card-hardcore" id="mode-card-hardcore" onclick="selectMode('hardcore')">
-          <span class="mode-badge mode-badge-hardcore" data-i18n="modeHardBadge"></span>
-          <span class="mode-icon">💀</span>
-          <div class="mode-title mode-title-hardcore" data-i18n="modeHardTitle"></div>
-          <div class="mode-desc" data-i18n="modeHardDesc"></div>
-          <span class="mode-check mode-check-hardcore">✓</span>
-        </div>
-      </div>
-
-      <!-- RULES (updated dynamically) -->
-      <ul class="rules" id="rules-list">
+      <ul class="rules">
         <li><span class="ico">&#8594;</span><span data-i18n="rule1"></span></li>
         <li><span class="ico">&#8594;</span><span data-i18n="rule2"></span></li>
         <li><span class="ico">&#8594;</span><span data-i18n="rule3"></span></li>
@@ -383,15 +529,82 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
         <li><span class="ico">&#8594;</span><span data-i18n="rule5"></span></li>
       </ul>
 
-      <div style="margin-bottom:16px;">
-        <label style="font-family:'DM Mono',monospace;font-size:0.75em;color:var(--muted);display:block;margin-bottom:6px;" data-i18n="seedLabel"></label>
-        <div style="display:flex;gap:8px;">
-          <input id="seed-input" type="text" data-i18n-placeholder="seedPlaceholder"
-            style="flex:1;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:0.75em;outline:none;">
-          <button class="btn-secondary" style="margin-top:0;padding:10px 16px;font-size:0.85em;" onclick="startWithSeedInput()" data-i18n="seedLoad"></button>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+
+        <!-- Mode Normal -->
+        <div style="border:1px solid rgba(79,255,176,0.25);border-radius:12px;padding:10px 12px;background:rgba(79,255,176,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Normal</div>
+          <button class="btn-primary" onclick="startGame('normal')" data-i18n="btnNormal"></button>
+        </div>
+
+        <!-- Mode Hardcore -->
+        <div style="border:1px solid rgba(255,61,90,0.25);border-radius:12px;padding:10px 12px;background:rgba(255,61,90,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:#ff3d5a;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Hardcore</div>
+          <button class="btn-hardcore" onclick="startGame('hardcore')" data-i18n="btnHardcore"></button>
+        </div>
+
+        <!-- Mode Personnalisé + Seed -->
+        <div style="border:1px solid rgba(167,139,250,0.3);border-radius:12px;padding:10px 12px;background:rgba(167,139,250,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:var(--accent3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;" data-i18n="modeCustomLabel"></div>
+          <div style="margin-bottom:10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:0.7em;color:var(--accent3);margin-bottom:6px;" data-i18n="seedLabel"></div>
+            <div style="display:flex;gap:8px;">
+              <input id="seed-input" type="text" data-i18n-placeholder="seedPlaceholder"
+                style="flex:1;padding:9px 12px;background:var(--surface2);border:1px solid rgba(167,139,250,0.3);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:0.75em;outline:none;">
+              <button style="margin-top:0;padding:9px 14px;font-size:0.8em;border-radius:8px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.1);color:var(--accent3);font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;" onclick="startWithSeedInput()" data-i18n="seedLoad"></button>
+            </div>
+          </div>
+          <button class="btn-custom" onclick="openCustomPanel()" data-i18n="btnCustom"></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM SETTINGS -->
+  <div id="panel-custom" class="panel hidden">
+    <div class="logo">&#9672; LeGrandGeoQuiz</div>
+    <h1><span class="highlight" data-i18n="customTitle"></span></h1>
+    <div class="custom-section">
+      <span class="custom-label" data-i18n="customCountLabel"></span>
+      <div class="custom-value-display"><span id="custom-n-display">8</span> <span data-i18n="customCountUnit"></span></div>
+      <input type="range" class="custom-slider" id="custom-n-slider" min="2" max="16" value="8"
+        oninput="document.getElementById('custom-n-display').textContent=this.value">
+    </div>
+    <div class="custom-section">
+      <span class="custom-label" data-i18n="customTimeLabel"></span>
+      <div class="time-pills" id="time-pills">
+        <div class="time-pill" data-secs="10" onclick="selectTimePill(this)">10s</div>
+        <div class="time-pill active" data-secs="20" onclick="selectTimePill(this)">20s</div>
+        <div class="time-pill" data-secs="30" onclick="selectTimePill(this)">30s</div>
+        <div class="time-pill" data-secs="60" onclick="selectTimePill(this)">60s</div>
+        <div class="time-pill" data-secs="0" onclick="selectTimePill(this)" data-i18n="customTimeInf"></div>
+      </div>
+    </div>
+    <div class="custom-section">
+      <span class="custom-label">
+        <span data-i18n="customDraftLabel"></span>
+        <button class="draft-info-btn" onclick="toggleDraftInfo()" title="?">?</button>
+      </span>
+      <div class="draft-tooltip" id="draft-tooltip" data-i18n="customDraftInfo"></div>
+      <div class="draft-pills">
+        <div class="draft-pill" id="draft-pill-auto" onclick="selectDraftPill('auto')">
+          <span class="dp-icon">🔀</span>
+          <span class="dp-label" data-i18n="draftAuto"></span>
+        </div>
+        <div class="draft-pill active" id="draft-pill-cats" onclick="selectDraftPill('cats')">
+          <span class="dp-icon">📊</span>
+          <span class="dp-label" data-i18n="draftCats"></span>
+        </div>
+        <div class="draft-pill" id="draft-pill-countries" onclick="selectDraftPill('countries')">
+          <span class="dp-icon">🌍</span>
+          <span class="dp-label" data-i18n="draftCountries"></span>
         </div>
       </div>
-      <button class="btn-primary" id="start-btn" onclick="startGame()" data-i18n="newGame"></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+      <button class="btn-custom" style="background:rgba(167,139,250,0.1);" onclick="startGame('custom')" data-i18n="customStart"></button>
+      <button class="btn-secondary" style="margin-top:0;" onclick="closeCustomPanel()" data-i18n="back"></button>
     </div>
   </div>
 
@@ -428,6 +641,20 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
       </div>
     </div>
     <div class="cats-grid" id="cats-grid"></div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="countdown-overlay">
+    <div class="countdown-num" id="countdown-num">3</div>
+    <div class="countdown-sub" id="countdown-sub"></div>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div id="end-reveal-screen" style="display:none">
+    <div class="reveal-title-big" id="reveal-screen-title">Récapitulatif</div>
+    <div class="reveal-rows" id="reveal-rows-container"></div>
+    <div class="reveal-running-score" id="reveal-running-score">0</div>
+    <div class="reveal-running-label" id="reveal-running-label">Score total</div>
   </div>
 
   <!-- END -->
@@ -501,6 +728,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'ex: 3-12-45-..._0-5-11-...',
     seedLoad:       'Charger',
     newGame:        'Nouvelle partie \u2192',
+    modeCustomLabel: 'Personnalis\u00e9 \u0026 Seed',
+    btnCustom:      'Personnalis\u00e9',
+    customTitle:    'Mode personnalis\u00e9',
+    customCountLabel:'Pays \u0026 cat\u00e9gories',
+    customCountUnit: 'tours',
+    customTimeLabel: 'Temps par tour',
+    customTimeInf:  '\u221e Infini',
+    customDraftLabel:'Ordre de sélection',
+    customDraftInfo: '📊 Cat\u00e9gories d\u0027abord\u00a0: on tire les cat\u00e9gories, puis les pays qui les couvrent (diversit\u00e9 des stats). 🌍 Pays d\u0027abord\u00a0: on tire les pays librement, puis on adapte les cat\u00e9gories (laisse plus de chances aux petits pays). 🔀 Auto\u00a0: alterne \u00e0 chaque partie.',
+    draftAuto:      'Auto',
+    draftCats:      'Catégories',
+    draftCountries: 'Pays',
+    customStart:    'Lancer la partie',
+    back:           '\u2190 Retour',
+    btnNormal:      '\uD83C\uDF0D Partie Normale',
+    btnHardcore:    'Partie Hardcore',
     score:          'Score',
     time:           'Temps',
     turn:           'Tour',
@@ -555,6 +798,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'e.g. 3-12-45-..._0-5-11-...',
     seedLoad:       'Load',
     newGame:        'New game \u2192',
+    modeCustomLabel: 'Custom \u0026 Seed',
+    btnCustom:      'Custom',
+    customTitle:    'Custom Mode',
+    customCountLabel:'Countries \u0026 categories',
+    customCountUnit: 'turns',
+    customTimeLabel: 'Time per turn',
+    customTimeInf:  '\u221e Infinite',
+    customDraftLabel:'Selection order',
+    customDraftInfo: '📊 Categories first: draw categories, then find matching countries (favors stat diversity). 🌍 Countries first: draw countries freely, then adapt categories (favors geographic diversity, gives small countries more chances). 🔀 Auto: alternates each game.',
+    draftAuto:      'Auto',
+    draftCats:      'Categories',
+    draftCountries: 'Countries',
+    customStart:    'Start game',
+    back:           '\u2190 Back',
+    btnNormal:      '\uD83C\uDF0D Normal Game',
+    btnHardcore:    'Hardcore Game',
     score:          'Score',
     time:           'Time',
     turn:           'Round',
@@ -594,6 +853,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'\u043d\u0430\u043f\u0440. 3-12-45-..._0-5-11-...',
     seedLoad:       '\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438',
     newGame:        '\u041d\u043e\u0432\u0430 \u0433\u0440\u0430 \u2192',
+    modeCustomLabel: '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0026 Seed',
+    btnCustom:      '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f',
+    customTitle:    '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f',
+    customCountLabel:'\u041a\u0440\u0430\u0457\u043d\u0438 \u0026 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u0457',
+    customCountUnit: '\u0442\u0443\u0440\u0456\u0432',
+    customTimeLabel: '\u0427\u0430\u0441',
+    customTimeInf:  '\u221e \u0411\u0435\u0437\u043b\u0456\u043c',
+    customDraftLabel:'Порядок вибору',
+    customDraftInfo: '📊 Спочатку категорії: тягнемо категорії, потім країни. 🌍 Спочатку країни: тягнемо країни вільно, потім адаптуємо категорії. 🔀 Авто: чергується.',
+    draftAuto:      'Авто',
+    draftCats:      'Категорії',
+    draftCountries: 'Країни',
+    customStart:    '\u041f\u043e\u0447\u0430\u0442\u0438',
+    back:           '\u2190 \u041d\u0430\u0437\u0430\u0434',
+    btnNormal:      '\uD83C\uDF0D \u041d\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u0430',
+    btnHardcore:    'Hardcore',
     score:          '\u0420\u0430\u0445\u0443\u043d\u043e\u043a',
     time:           '\u0427\u0430\u0441',
     turn:           '\u0425\u0456\u0434',
@@ -651,7 +926,7 @@ function setLang(lang) {
   });
   document.documentElement.lang = (lang === 'ua') ? 'uk' : lang;
   applyTranslations();
-  if (gameCategories.length > 0 && currentStep < 8) rerenderCategoryButtonNames();
+  if (gameCategories.length > 0 && currentStep < gameCountries.length) rerenderCategoryButtonNames();
 }
 
 function applyTranslations() {
@@ -746,9 +1021,16 @@ var totalScore     = 0;
 var timerInterval  = null;
 var timeLeft       = 20;
 var usedCategories = {};
+var gameLog        = []; // [{flag, name, catObj, points, isPenalty}]
 var currentSeed    = '';
 var TIME_PER_TURN  = 20;
 var isRevealing    = false;
+var gameMode       = 'normal'; // 'normal' | 'hardcore' | 'custom'
+var N_TURNS        = 8;
+var CUSTOM_TIME    = 20;
+var draftMode      = 'auto';  // 'auto'|'cats'|'countries'
+var draftCounter   = 0;       // increments each game, used for alternating
+var lastDraftUsed  = '';      // 'cats' or 'countries' — set during generation
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function initApp() {
@@ -791,27 +1073,75 @@ function decodeSeed(seed) {
   if (parts.length !== 2) return null;
   var ci = parts[0].split('-').map(Number);
   var ki = parts[1].split('-').map(Number);
-  if (ci.length !== 8 || ki.length !== 8) return null;
+  if (ci.length !== ki.length || ci.length < 2) return null;
   if (ci.some(isNaN) || ki.some(isNaN)) return null;
   return {countryIndices:ci, catIndices:ki};
 }
 
-function generateSeed() {
-  var catPool = shuffle(ALL_CATEGORIES.map(function(_,i){return i;})).slice(0,8);
+function generateSeedCatsFirst() {
+  // Classic: pick N categories, then find countries that cover them all
+  var catPool = shuffle(ALL_CATEGORIES.map(function(_,i){return i;})).slice(0,N_TURNS);
   var catIds  = catPool.map(function(i){return ALL_CATEGORIES[i].id;});
   var eligible = countriesDB
     .map(function(c,i){return {c:c,i:i};})
-    .filter(function(x){ return catIds.every(function(id){ return x.c[id] !== false && x.c[id] !== null && x.c[id] !== undefined; }); });
+    .filter(function(x){ return catIds.every(function(id){
+      return x.c[id] !== false && x.c[id] !== null && x.c[id] !== undefined;
+    });});
   var countryPool;
-  if (eligible.length >= 8) {
-    countryPool = shuffle(eligible).slice(0,8);
+  if (eligible.length >= N_TURNS) {
+    countryPool = shuffle(eligible).slice(0,N_TURNS);
   } else {
     var scored = countriesDB.map(function(c,i){
       return {c:c,i:i,score:catIds.filter(function(id){return c[id]!==false&&c[id]!==null&&c[id]!==undefined;}).length};
     }).sort(function(a,b){return b.score-a.score;});
-    countryPool = shuffle(scored.slice(0, Math.min(16,scored.length))).slice(0,8);
+    countryPool = shuffle(scored.slice(0, Math.min(N_TURNS*2+4,scored.length))).slice(0,N_TURNS);
   }
+  lastDraftUsed = 'cats';
   return encodeSeed(countryPool.map(function(x){return x.i;}), catPool);
+}
+
+function generateSeedCountriesFirst() {
+  // New: pick N countries freely, then pick N categories they all share
+  var countryPool = shuffle(countriesDB.map(function(c,i){return {c:c,i:i};})).slice(0, Math.min(N_TURNS*3, countriesDB.length));
+  // Find categories that are valid for ALL chosen countries
+  var chosenCountries = countryPool.slice(0, N_TURNS);
+  var validCats = ALL_CATEGORIES.map(function(cat,i){return {cat:cat,i:i};}).filter(function(x){
+    return chosenCountries.every(function(co){
+      var v = co.c[x.cat.id];
+      return v !== false && v !== null && v !== undefined;
+    });
+  });
+  if (validCats.length >= N_TURNS) {
+    // Enough shared categories — pick N randomly
+    var catPool = shuffle(validCats).slice(0,N_TURNS).map(function(x){return x.i;});
+    lastDraftUsed = 'countries';
+    return encodeSeed(chosenCountries.map(function(x){return x.i;}), catPool);
+  }
+  // Not enough shared cats — relax: pick best countries coverage-wise
+  var allCatIds = ALL_CATEGORIES.map(function(c){return c.id;});
+  var relaxPool = shuffle(countriesDB.map(function(c,i){
+    return {c:c, i:i, score:allCatIds.filter(function(id){var v=c[id];return v!==false&&v!==null&&v!==undefined;}).length};
+  }).sort(function(a,b){return b.score-a.score;}).slice(0, Math.min(N_TURNS*4, countriesDB.length)));
+  var relaxCountries = relaxPool.slice(0, N_TURNS);
+  var relaxCats = ALL_CATEGORIES.map(function(cat,i){return {cat:cat,i:i};}).filter(function(x){
+    return relaxCountries.every(function(co){var v=co.c[x.cat.id];return v!==false&&v!==null&&v!==undefined;});
+  });
+  if (relaxCats.length >= N_TURNS) {
+    var catPool2 = shuffle(relaxCats).slice(0,N_TURNS).map(function(x){return x.i;});
+    lastDraftUsed = 'countries';
+    return encodeSeed(relaxCountries.map(function(x){return x.i;}), catPool2);
+  }
+  // Fallback: cats-first
+  return generateSeedCatsFirst();
+}
+
+function generateSeed() {
+  var useCats;
+  if (draftMode === 'cats')      { useCats = true; }
+  else if (draftMode === 'countries') { useCats = false; }
+  else { useCats = (draftCounter % 2 === 0); } // alternate
+  draftCounter++;
+  return useCats ? generateSeedCatsFirst() : generateSeedCountriesFirst();
 }
 
 function applyGameFromSeed(seed) {
@@ -826,38 +1156,128 @@ function applyGameFromSeed(seed) {
   return true;
 }
 
+
+// ─── CUSTOM MODE ──────────────────────────────────────────────────────────────
+var customTimeSelected = 20;
+
+function selectTimePill(el) {
+  document.querySelectorAll('.time-pill').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  customTimeSelected = parseInt(el.dataset.secs, 10);
+}
+
+function selectDraftPill(mode) {
+  ['auto','cats','countries'].forEach(function(m) {
+    var el = document.getElementById('draft-pill-' + m);
+    if (el) el.classList.toggle('active', m === mode);
+  });
+  draftMode = mode;
+}
+
+function toggleDraftInfo() {
+  var el = document.getElementById('draft-tooltip');
+  el.classList.toggle('visible');
+  // Populate with current lang
+  el.textContent = t('customDraftInfo');
+}
+
+function openCustomPanel() {
+  document.getElementById('panel-setup').classList.add('hidden');
+  document.getElementById('panel-custom').classList.remove('hidden');
+}
+
+function closeCustomPanel() {
+  document.getElementById('panel-custom').classList.add('hidden');
+  document.getElementById('panel-setup').classList.remove('hidden');
+}
+
+// ─── COUNTDOWN ────────────────────────────────────────────────────────────────
+function showCountdown(onDone) {
+  var overlay = document.getElementById('countdown-overlay');
+  var numEl   = document.getElementById('countdown-num');
+  var subEl   = document.getElementById('countdown-sub');
+  var counts  = ['3','2','1','GO'];
+  overlay.classList.add('active');
+  subEl.textContent = '';
+  var i = 0;
+  function showStep() {
+    numEl.className = 'countdown-num';
+    void numEl.offsetWidth;
+    numEl.textContent = counts[i];
+    // On GO: show draft emoji as subtitle
+    if (i === counts.length - 1) {
+      subEl.textContent = lastDraftUsed === 'countries' ? '🌍' : '📊';
+    } else {
+      subEl.textContent = '';
+    }
+    i++;
+    if (i < counts.length) {
+      setTimeout(function() {
+        numEl.classList.add('fadeout');
+        setTimeout(showStep, 300);
+      }, 700);
+    } else {
+      setTimeout(function() {
+        numEl.classList.add('fadeout');
+        setTimeout(function() {
+          overlay.classList.remove('active');
+          subEl.textContent = '';
+          onDone();
+        }, 280);
+      }, 550);
+    }
+  }
+  showStep();
+}
+
 // ─── GAME START ───────────────────────────────────────────────────────────────
-function startGame(seedOverride) {
+function startGame(modeOrSeed, seedOverride) {
+  if (modeOrSeed === 'normal' || modeOrSeed === 'hardcore' || modeOrSeed === 'custom') {
+    gameMode = modeOrSeed;
+  } else if (typeof modeOrSeed === 'string' && modeOrSeed) {
+    seedOverride = modeOrSeed;
+  }
+
+  // Apply N_TURNS and time per mode
+  if (gameMode === 'custom') {
+    N_TURNS = parseInt(document.getElementById('custom-n-slider').value, 10) || 8;
+    TIME_PER_TURN = customTimeSelected; // 0 = infinite
+    document.body.classList.remove('hardcore');
+    document.getElementById('panel-custom').classList.add('hidden');
+  } else {
+    N_TURNS = 8;
+    TIME_PER_TURN = (gameMode === 'hardcore') ? 10 : 20;
+    if (gameMode === 'hardcore') document.body.classList.add('hardcore');
+    else document.body.classList.remove('hardcore');
+    document.getElementById('panel-setup').classList.add('hidden');
+  }
+
   var seed = seedOverride || generateSeed();
   if (!applyGameFromSeed(seed)) return;
   currentSeed    = seed;
   currentStep    = 0;
   totalScore     = 0;
   usedCategories = {};
+  gameLog        = [];
   isRevealing    = false;
   if (typeof resetHints === 'function') resetHints();
 
-  // Apply mode
-  TIME_PER_TURN = gameMode === 'hardcore' ? 10 : 20;
-  if (gameMode === 'hardcore') {
-    document.body.classList.add('hardcore');
-    document.body.classList.remove('hc-preview');
-  } else {
-    document.body.classList.remove('hardcore');
-  }
-
-  document.getElementById('panel-setup').classList.add('hidden');
-  document.getElementById('panel-game').classList.remove('hidden');
-  document.getElementById('game-seed-display').textContent = (gameMode === 'hardcore' ? '💀 ' : '🔑 ') + currentSeed;
-  renderCategoryButtons();
-  showTurn();
+  // Show countdown, then launch
+  showCountdown(function() {
+    document.getElementById('panel-game').classList.remove('hidden');
+    document.getElementById('game-seed-display').textContent = currentSeed;
+    renderCategoryButtons();
+    showTurn();
+  });
 }
 
 function startWithSeedInput() {
   var raw = document.getElementById('seed-input').value.trim();
   if (!raw) { alert(t('enterSeed')); return; }
   var match = raw.match(/(\d[\d-]*_[\d-]*\d)/);
-  startGame(match ? match[1] : raw);
+  var seed = match ? match[1] : raw;
+  // keep current gameMode, just override seed
+  startGame(gameMode, seed);
 }
 
 // ─── CATEGORY BUTTONS ─────────────────────────────────────────────────────────
@@ -917,7 +1337,7 @@ function attachInfoListeners() {
 
 // ─── TURN DISPLAY ─────────────────────────────────────────────────────────────
 function showTurn() {
-  if (currentStep >= 8) { endGame(); return; }
+  if (currentStep >= gameCountries.length) { endGame(); return; }
   var c    = gameCountries[currentStep];
   var name = getCountryName(c);
   var flag = c.flag || c.emoji || '🌍';
@@ -925,7 +1345,7 @@ function showTurn() {
   document.getElementById('country-flag').textContent = flag;
   applyEmoji(document.getElementById('country-flag'));
   document.getElementById('country-name').textContent = name;
-  document.getElementById('country-sub').textContent  = c.country_code ? '[' + c.country_code + ']' : '';
+  document.getElementById('country-sub').textContent  = '';  // ISO code removed
 
   // Country info button: show/hide based on description availability
   // Hint buttons: show hint1 if desc available, hide hint2 until hint1 revealed
@@ -933,7 +1353,7 @@ function showTurn() {
   var desc1 = getCountryDesc(c);
   btn1.style.display = desc1 ? 'inline-flex' : 'none';
   document.getElementById('hint-btn-2').style.display = 'none';
-  document.getElementById('turn-label').textContent   = t('turn') + ' ' + (currentStep+1) + ' ' + t('of') + ' 8';
+  document.getElementById('turn-label').textContent   = t('turn') + ' ' + (currentStep+1) + ' ' + t('of') + ' ' + gameCountries.length;
   document.getElementById('total-score').textContent  = totalScore;
 
   gameCategories.forEach(function(cat) {
@@ -967,40 +1387,90 @@ function showTurn() {
 
 // ─── TIMER ────────────────────────────────────────────────────────────────────
 function startTimer() {
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
+
+  // Infinite time: show ∞, no countdown, no autopick
+  if (TIME_PER_TURN === 0) {
+    var numEl2 = document.getElementById('timer-num');
+    var fillEl2 = document.getElementById('progress-fill');
+    numEl2.textContent = '∞';
+    fillEl2.style.width = '100%';
+    fillEl2.classList.remove('urgent');
+    numEl2.classList.remove('urgent', 'danger');
+    timerInterval = { _raf: function() {} };
+    return;
+  }
+
   timeLeft = TIME_PER_TURN;
-  updateTimerUI();
-  timerInterval = setInterval(function() {
-    timeLeft--;
-    updateTimerUI();
-    if (timeLeft <= 0) { clearInterval(timerInterval); autoPick(); }
-  }, 1000);
+  var startedAt = Date.now();
+  var fired = false;
+  var rafId = null;
+
+  var fillEl = document.getElementById('progress-fill');
+  fillEl.style.transition = 'none';
+
+  function tick() {
+    var elapsed = (Date.now() - startedAt) / 1000;
+    var remaining = Math.max(0, TIME_PER_TURN - elapsed);
+    timeLeft = Math.ceil(remaining);
+    updateTimerUI(remaining);
+    if (!fired && remaining <= 0) {
+      fired = true;
+      autoPick();
+      return;
+    }
+    if (!fired) rafId = requestAnimationFrame(tick);
+  }
+
+  timerInterval = { _raf: null };
+  rafId = requestAnimationFrame(tick);
+  timerInterval._raf = function() { cancelAnimationFrame(rafId); fired = true; };
+  updateTimerUI(TIME_PER_TURN);
 }
 
-function updateTimerUI() {
+function updateTimerUI(remaining) {
   var numEl  = document.getElementById('timer-num');
   var fillEl = document.getElementById('progress-fill');
-  numEl.textContent   = timeLeft;
-  fillEl.style.width  = (timeLeft / TIME_PER_TURN * 100) + '%';
-  var urgent = timeLeft <= 8;
+  // remaining can be undefined on first call
+  var pct = (remaining !== undefined)
+    ? (remaining / TIME_PER_TURN * 100)
+    : 100;
+  var displayNum = (remaining !== undefined) ? Math.ceil(remaining) : TIME_PER_TURN;
+  numEl.textContent   = displayNum;
+  fillEl.style.width  = pct + '%';
+  var urgent = displayNum <= (gameMode === 'hardcore' ? 4 : 8);
   numEl.classList.toggle('urgent',  urgent);
   fillEl.classList.toggle('urgent', urgent);
+  // Hardcore danger pulse
+  if (gameMode === 'hardcore') {
+    numEl.classList.toggle('danger', displayNum <= 4);
+  } else {
+    numEl.classList.remove('danger');
+  }
 }
 
 // ─── AUTO PICK ────────────────────────────────────────────────────────────────
 function autoPick() {
   if (isRevealing) return;
   isRevealing = true;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   disableAllCatButtons();
   var PENALTY = 200;
   totalScore += PENALTY;
-  document.getElementById('total-score').textContent = totalScore;
 
   var country = gameCountries[currentStep];
   var cName   = getCountryName(country);
   var flag    = country.flag || country.emoji || '🌍';
+  gameLog.push({flag:flag, name:cName, catObj:null, points:PENALTY, isPenalty:true});
 
+  // HC: no overlay, advance silently
+  if (gameMode === 'hardcore') {
+    setTimeout(function() { isRevealing = false; currentStep++; showTurn(); }, 350);
+    return;
+  }
+
+  // Normal mode: show penalty overlay
+  document.getElementById('total-score').textContent = totalScore;
   var overlay = document.createElement('div');
   overlay.id = 'reveal-overlay';
   overlay.innerHTML =
@@ -1011,13 +1481,12 @@ function autoPick() {
     + '<span class="reveal-country-name">' + cName + '</span></div>'
     + '<div style="font-family:\'DM Mono\',monospace;font-size:4em;font-weight:700;color:var(--accent2);margin:16px 0;animation:penaltyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);">+' + PENALTY + '</div>'
     + '<div class="reveal-points-label" style="color:var(--accent2);">' + t('penalty') + '</div>'
-    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('cont') + '</button>'
+    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('skip') + '</button>'
     + '</div>';
   var s = document.createElement('style');
   s.textContent = '@keyframes penaltyPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}';
   overlay.appendChild(s);
   document.body.appendChild(overlay);
-
   var overlayClosed = false;
   function closeOverlay() {
     if (overlayClosed) return;
@@ -1034,7 +1503,7 @@ function autoPick() {
 // ─── HANDLE CHOICE ────────────────────────────────────────────────────────────
 function handleChoice(catId) {
   if (isRevealing) return;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   var btn = document.getElementById('cat-' + catId);
   if (!btn || btn.disabled) return;
 
@@ -1057,13 +1526,26 @@ function handleChoice(catId) {
   applyEmoji(btn);
 
   isRevealing = true;
-  showReveal(flag, cName, catObj, points, function() {
-    isRevealing = false;
-    if (points !== false) totalScore += points;
-    document.getElementById('total-score').textContent = totalScore;
-    currentStep++;
-    showTurn();
-  });
+  var pts = (points === false || points === null || points === undefined || isNaN(points)) ? 0 : Number(points);
+  gameLog.push({flag:flag, name:cName, catObj:catObj, points:pts, isPenalty:false});
+
+  if (gameMode === 'hardcore') {
+    // Hardcore: no reveal overlay, accumulate score silently, advance quickly
+    totalScore += pts;
+    setTimeout(function() {
+      isRevealing = false;
+      currentStep++;
+      showTurn();
+    }, 420);
+  } else {
+    showReveal(flag, cName, catObj, points, function() {
+      isRevealing = false;
+      if (points !== false) totalScore += pts;
+      document.getElementById('total-score').textContent = totalScore;
+      currentStep++;
+      showTurn();
+    });
+  }
 }
 
 function disableAllCatButtons() {
@@ -1083,8 +1565,8 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
     + '<div class="reveal-cat-name">' + catObj.icon + ' ' + catName(catObj) + '</div>'
     + '<div class="reveal-country"><span class="reveal-flag">' + flag + '</span>'
     + '<span class="reveal-country-name">' + cName + '</span></div>'
-    + '<div class="odometer-wrap" id="odo-wrap"></div>'
-    + '<div class="reveal-points-label">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
+    + '<div class="odometer-wrap" id="odo-wrap" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '"></div>'
+    + '<div class="reveal-points-label" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
     + '<button class="reveal-skip" id="reveal-skip-btn">' + t('skip') + '</button>'
     + '</div>';
   document.body.appendChild(overlay);
@@ -1110,11 +1592,9 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
   function onComplete() {
     animDone = true;
     wrap.querySelectorAll('.odo-digit-wrap').forEach(function(d) { d.classList.add('done'); });
-    skipBtn.textContent = t('cont');
-    skipBtn.style.borderColor = 'var(--accent)';
-    skipBtn.style.color = 'var(--accent)';
+    // Auto-close after brief pause — no button text change (avoids the "Passer→Continuer" look)
     skipBtn.onclick = closeReveal;
-    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 2500);
+    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 1800);
   }
 
   function onSkip() {
@@ -1235,31 +1715,151 @@ function solveOptimal() {
 }
 
 function endGame() {
-  clearInterval(timerInterval);
-  // In hardcore: restore score visibility on end screen
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
+
+  // Apply ended theme
   document.body.classList.remove('hardcore');
-  if (gameMode === 'hardcore') {
-    document.body.classList.add('hardcore-ended');
-  }
+  if (gameMode === 'hardcore') document.body.classList.add('hardcore-ended');
+
   document.getElementById('panel-game').classList.add('hidden');
+
+  // Show the dramatic reveal screen first
+  showEndReveal(function() {
+    // After reveal → show normal end panel
+    var revealEl = document.getElementById('end-reveal-screen');
+    revealEl.style.opacity = '0';
+    setTimeout(function() {
+      revealEl.style.display = 'none';
+      showEndPanel();
+    }, 400);
+  });
+}
+
+function showEndReveal(onDone) {
+  var screen = document.getElementById('end-reveal-screen');
+  var container = document.getElementById('reveal-rows-container');
+  var scoreEl = document.getElementById('reveal-running-score');
+  var labelEl = document.getElementById('reveal-running-label');
+  var titleEl = document.getElementById('reveal-screen-title');
+
+  container.innerHTML = '';
+  scoreEl.textContent = '0';
+  screen.style.display = 'flex';
+  screen.style.opacity = '0';
+  screen.style.flexDirection = 'column';
+  screen.style.alignItems = 'center';
+  screen.style.justifyContent = 'center';
+
+  // i18n labels
+  titleEl.textContent = gameMode === 'hardcore'
+    ? (currentLang === 'fr' ? '— RÉVÉLATION —' : currentLang === 'ua' ? '— РОЗКРИТТЯ —' : '— REVEAL —')
+    : (currentLang === 'fr' ? 'Récapitulatif' : currentLang === 'ua' ? 'Підсумок' : 'Summary');
+  labelEl.textContent = currentLang === 'fr' ? 'Score total' : currentLang === 'ua' ? 'Загальний рахунок' : 'Total score';
+
+  // Fix: use inline style for opacity, not class (inline wins over class)
+  setTimeout(function() { screen.style.opacity = '1'; }, 30);
+
+  var delay = gameMode === 'hardcore' ? 420 : 300;
+
+  // Pre-compute running totals so each setTimeout has the right snapshot
+  var cumulative = [];
+  var acc = 0;
+  gameLog.forEach(function(entry) {
+    var add = (entry.points === false || entry.points === null || isNaN(entry.points)) ? 0 : Number(entry.points);
+    acc += add;
+    cumulative.push(acc);
+  });
+
+  // Build all rows (hidden), then reveal one by one
+  gameLog.forEach(function(entry, i) {
+    var row = document.createElement('div');
+    row.className = 'reveal-row' + (entry.isPenalty ? ' penalty-row' : '');
+
+    var catLabel;
+    if (entry.isHint) {
+      if (entry.hintLevel === 1) catLabel = currentLang === 'fr' ? '💡 Indice géo (+25 pts)' : currentLang === 'ua' ? '💡 Підказка (+25)' : '💡 Geo hint (+25 pts)';
+      else catLabel = currentLang === 'fr' ? '🔍 Indice stratégique (+50 pts)' : currentLang === 'ua' ? '🔍 Стратегія (+50)' : '🔍 Strategic hint (+50 pts)';
+    } else if (entry.isPenalty) {
+      catLabel = currentLang === 'fr' ? 'Temps écoulé (+200 pts)' : currentLang === 'ua' ? 'Час вийшов (+200)' : 'Time up (+200 pts)';
+    } else {
+      catLabel = entry.catObj ? entry.catObj.icon + ' ' + catName(entry.catObj) : '?';
+    }
+
+    var ptsVal = entry.isPenalty ? '+' + entry.points : (entry.points === false ? '—' : entry.points);
+    var ptsClass = entry.isPenalty ? 'rr-pts penalty' : 'rr-pts';
+
+    row.innerHTML =
+      '<span class="rr-flag">' + entry.flag + '</span>' +
+      '<div class="rr-info">' +
+        '<div class="rr-name">' + entry.name + '</div>' +
+        '<div class="rr-cat">' + catLabel + '</div>' +
+      '</div>' +
+      '<span class="' + ptsClass + '">' + ptsVal + '</span>';
+
+    container.appendChild(row);
+    applyEmoji(row);
+
+    setTimeout(function(r, prevScore, newScore) {
+      r.classList.add('shown');
+      if (newScore !== prevScore) {
+        animateCounter(scoreEl, prevScore, newScore, 300, null);
+        scoreEl.classList.remove('score-pop');
+        void scoreEl.offsetWidth;
+        scoreEl.classList.add('score-pop');
+      }
+    }.bind(null, row, i > 0 ? cumulative[i-1] : 0, cumulative[i]), (i + 1) * delay);
+  });
+
+  var totalDelay = (gameLog.length + 1) * delay + 800;
+  setTimeout(onDone, totalDelay);
+}
+
+function animateCounter(el, from, to, duration, onStep) {
+  var start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    var progress = Math.min((ts - start) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    var current = Math.round(from + (to - from) * eased);
+    el.textContent = current;
+    if (onStep) onStep(current);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = to;
+  }
+  requestAnimationFrame(step);
+}
+
+function showEndPanel() {
   document.getElementById('panel-end').classList.remove('hidden');
-  document.getElementById('final-score').textContent = totalScore;
+  // Recompute from gameLog to be bulletproof against any NaN accumulation
+  var computedScore = 0;
+  gameLog.forEach(function(e) {
+    var v = Number(e.points);
+    if (!isNaN(v)) computedScore += v;
+  });
+  var safeScore = computedScore;
+  totalScore = safeScore;
+  document.getElementById('final-score').textContent = safeScore;
   var tl  = t('taglines');
-  var idx = totalScore < 100 ? 0 : totalScore < 300 ? 1 : totalScore < 600 ? 2 : totalScore < 1000 ? 3 : 4;
+  var idx = safeScore < 100 ? 0 : safeScore < 300 ? 1 : safeScore < 600 ? 2 : safeScore < 1000 ? 3 : 4;
   document.getElementById('end-tagline').textContent = tl[idx];
   document.getElementById('seed-display').innerHTML =
     '<strong>' + t('seedShare') + '</strong><span id="seed-value">' + currentSeed + '</span>';
 
+  // Animate final score
+  var scoreEl2 = document.getElementById('final-score');
+  scoreEl2.textContent = '0';
+  animateCounter(scoreEl2, 0, safeScore, 900, null);
+
   // Compute optimal
   optimalResult = solveOptimal();
-  var diff = totalScore - optimalResult.score;
-
-  document.getElementById('opt-your-score').textContent = totalScore;
+  var diff = safeScore - optimalResult.score;
+  document.getElementById('opt-your-score').textContent = safeScore;
   document.getElementById('opt-best-score').textContent = optimalResult.score;
-  applyTranslations(); // re-render i18n in end panel
+  applyTranslations();
 
   var diffEl = document.getElementById('opt-diff-row');
-  if (diff === 0) {
+  if (diff <= 0) {
     diffEl.innerHTML = '<span style="color:var(--accent);font-weight:700;">' + t('optPerfect') + '</span>';
   } else {
     diffEl.innerHTML = t('optDiff') + ': <span style="color:#ffb34f;font-weight:700;">+' + diff + '</span> pts';
@@ -1311,19 +1911,19 @@ document.getElementById('opt-modal').addEventListener('click', function(e) {
 });
 
 function resetToMenu() {
-  // Reset body theme
-  document.body.classList.remove('hardcore','hardcore-ended','hc-preview');
+  document.body.classList.remove('hardcore','hardcore-ended');
   TIME_PER_TURN = 20;
+  N_TURNS = 8;
   gameMode = 'normal';
-  // Reset mode cards
-  document.getElementById('mode-card-normal').classList.add('selected');
-  document.getElementById('mode-card-hardcore').classList.remove('selected');
+  draftMode = 'auto';
+  document.getElementById('panel-custom').classList.add('hidden');
   document.getElementById('panel-end').classList.add('hidden');
+  var revealEl = document.getElementById('end-reveal-screen');
+  revealEl.style.display = 'none';
+  revealEl.classList.remove('visible');
   document.getElementById('panel-setup').classList.remove('hidden');
   document.getElementById('setup-ready').classList.remove('hidden');
   document.getElementById('loader').classList.add('hidden');
-  // Reset rules to normal
-  selectMode('normal');
   applyTranslations();
 }
 
@@ -1651,7 +2251,7 @@ var COUNTRY_HINTS2 = {
   KG:{fr:"Parmi les plus pauvres d'Asie centrale. Dépendant des transferts de la diaspora. Ressources hydrauliques importantes.",en:"Among the poorest in Central Asia. Dependent on diaspora remittances. Important water resources.",ua:"Серед найбідніших у Центральній Азії. Переказ грошей. Водні ресурси."},
   GE:{fr:"Économie en développement, réformes importantes. Hub touristique du Caucase. Conflits territoriaux avec la Russie.",en:"Developing economy with major reforms. Caucasus tourist hub. Territorial conflicts with Russia.",ua:"Реформована економіка. Туристичний хаб Кавказу. Конфлікти з Росією."},
   BI:{fr:"Parmi les plus pauvres du monde. Instabilité politique récurrente. Agriculture de subsistance.",en:"Among the world's poorest. Recurring political instability. Subsistence agriculture.",ua:"Серед найбідніших. Нестабільність. Натуральне господарство."},
-  BY:{fr:"Régime autoritaire proche de la Russie. Économie planifiée. Sous sanctions depuis 2020.",en:"Authoritarian regime aligned with Russia. Planned economy. Under sanctions since 2020.",ua:"Авторитарний режим, пов'язаний з Росією. Планова. Санкції з 2020."}
+  BY:{fr:"Régime autoritaire proche de la Russie. Économie planifiée. Sous sanctions depuis 2020.",en:"Authoritarian regime aligned with Russia. Planned economy. Under sanctions since 2020.",ua:"Авторитарний режим, пов'язаний з Росією. Планова. Санкції з 2020."},
   UY:{fr:'Économie la plus stable et équitable d\'Amérique du Sud. Très faible corruption. État providence fort. Grand exportateur agricole (viande, soja, laine).',en:'South America\'s most stable and equal economy. Very low corruption. Strong welfare state. Major agricultural exporter (beef, soybeans, wool).',ua:'Найстабільніша економіка Південної Америки. Низька корупція. Сильна соціальна держава. Агроекспорт.'},
   LT:{fr:'Économie la plus développée des trois États baltes. Hub technologique et financier régional. Membre UE et OTAN depuis 2004. Très bon niveau d\'éducation.',en:'Most developed of the three Baltic states. Regional tech and financial hub. EU and NATO member since 2004. High education level.',ua:'Найрозвиненіша з трьох балтійських держав. Технологічний та фінансовий хаб. ЄС та НАТО з 2004 р.'},
   SI:{fr:'Économie la plus développée des Balkans, proche du niveau d\'Europe occidentale. Fort secteur industriel. Tourisme alpin important. Membre UE et OTAN depuis 2004.',en:'Most developed Balkan economy, close to Western European levels. Strong industrial sector. Important Alpine tourism. EU and NATO member since 2004.',ua:'Найрозвиненіша балканська економіка. Сильний промисловий сектор. Гірський туризм. ЄС та НАТО з 2004 р.'},
@@ -1845,6 +2445,17 @@ function revealHint1(e) {
   totalScore += 25;
   document.getElementById('total-score').textContent = totalScore;
   flashScore();
+  // Log hint penalty for end-screen recap
+  var _c1 = gameCountries[currentStep];
+  gameLog.push({
+    flag: _c1.flag || _c1.emoji || '🌍',
+    name: getCountryName(_c1),
+    catObj: null,
+    points: 25,
+    isPenalty: true,
+    isHint: true,
+    hintLevel: 1
+  });
 
   var btn1 = document.getElementById('hint-btn-1');
   if (e) { spawnRipple(btn1, e); spawnParticles(btn1, 'green'); }
@@ -1884,6 +2495,17 @@ function revealHint2(e) {
   totalScore += 50;
   document.getElementById('total-score').textContent = totalScore;
   flashScore();
+  // Log hint penalty for end-screen recap
+  var _c2 = gameCountries[currentStep];
+  gameLog.push({
+    flag: _c2.flag || _c2.emoji || '🌍',
+    name: getCountryName(_c2),
+    catObj: null,
+    points: 50,
+    isPenalty: true,
+    isHint: true,
+    hintLevel: 2
+  });
 
   var btn2 = document.getElementById('hint-btn-2');
   if (e) { spawnRipple(btn2, e); spawnParticles(btn2, 'orange'); }

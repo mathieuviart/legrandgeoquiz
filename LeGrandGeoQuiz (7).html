@@ -129,7 +129,7 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
 .timer-num { font-family:'DM Mono',monospace; font-size:1.3em; font-weight:500; color:var(--accent); min-width:28px; transition:color 0.3s; }
 .timer-num.urgent { color:var(--accent2); }
 .progress-track { flex:1; height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
-.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:width 1s linear, background 0.3s; }
+.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:background 0.3s; }
 .progress-fill.urgent { background:var(--accent2); }
 
 /* country block */
@@ -222,10 +222,73 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
   box-shadow: 0 0 30px rgba(255,61,90,0.35);
   transform:translateY(-2px);
 }
-.btn-hardcore::before {
-  content:'💀';
-  margin-right:8px;
+/* no emoji prefix */
+
+
+/* ── End reveal screen ── */
+#end-reveal-screen {
+  position:fixed; inset:0; z-index:700;
+  background:var(--bg);
+  display:none;
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; transition:opacity 0.4s;
 }
+#end-reveal-screen.visible { opacity:1; }
+
+.reveal-title-big {
+  font-family:'Syne',sans-serif; font-size:1em; font-weight:700;
+  color:var(--muted); letter-spacing:0.15em; text-transform:uppercase;
+  margin-bottom:24px;
+}
+body.hardcore-ended #end-reveal-screen { background:#0d0608; }
+body.hardcore-ended .reveal-title-big { color:#ff3d5a; }
+
+.reveal-rows {
+  width:100%; max-width:440px;
+  display:flex; flex-direction:column; gap:8px;
+  margin-bottom:24px;
+}
+
+.reveal-row {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--border);
+  opacity:0; transform:translateX(-18px);
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  font-family:'DM Mono',monospace;
+}
+.reveal-row.shown { opacity:1; transform:translateX(0); }
+.reveal-row.penalty-row { border-color:var(--accent2); }
+body.hardcore-ended .reveal-row { background:#1c0e11; border-color:#2e1018; }
+body.hardcore-ended .reveal-row.penalty-row { border-color:#ff3d5a; }
+
+.rr-flag { font-size:1.5em; flex-shrink:0; }
+.rr-info { flex:1; min-width:0; }
+.rr-name { font-size:0.75em; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-cat  { font-size:0.65em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-pts  { font-size:1em; font-weight:800; flex-shrink:0; color:var(--accent); }
+.rr-pts.penalty { color:var(--accent2); }
+body.hardcore-ended .rr-pts { color:#ff3d5a; }
+
+.reveal-running-score {
+  font-family:'Syne',sans-serif; font-size:3.5em; font-weight:800;
+  color:var(--accent); line-height:1;
+  transition:color 0.2s;
+}
+body.hardcore-ended .reveal-running-score { color:#ff3d5a; }
+.reveal-running-label {
+  font-family:'DM Mono',monospace; font-size:0.7em; color:var(--muted);
+  letter-spacing:0.1em; text-transform:uppercase; margin-top:6px;
+}
+
+@keyframes scorePop {
+  0%   { transform:scale(1); }
+  40%  { transform:scale(1.18); }
+  100% { transform:scale(1); }
+}
+.score-pop { animation: scorePop 0.25s ease; }
 
 .hidden { display:none !important; }
 
@@ -438,6 +501,14 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
     <div class="cats-grid" id="cats-grid"></div>
   </div>
 
+  <!-- REVEAL SCREEN -->
+  <div id="end-reveal-screen" style="display:none">
+    <div class="reveal-title-big" id="reveal-screen-title">Récapitulatif</div>
+    <div class="reveal-rows" id="reveal-rows-container"></div>
+    <div class="reveal-running-score" id="reveal-running-score">0</div>
+    <div class="reveal-running-label" id="reveal-running-label">Score total</div>
+  </div>
+
   <!-- END -->
   <div id="panel-end" class="panel hidden">
     <div class="logo" data-i18n="gameOver"></div>
@@ -607,7 +678,7 @@ var TRANSLATIONS = {
     seedLoad:       '\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438',
     newGame:        '\u041d\u043e\u0432\u0430 \u0433\u0440\u0430 \u2192',
     btnNormal:      '\uD83C\uDF0D \u041d\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u0430',
-    btnHardcore:    '\uD83D\uDC80 Hardcore',
+    btnHardcore:    'Hardcore',
     score:          '\u0420\u0430\u0445\u0443\u043d\u043e\u043a',
     time:           '\u0427\u0430\u0441',
     turn:           '\u0425\u0456\u0434',
@@ -760,6 +831,7 @@ var totalScore     = 0;
 var timerInterval  = null;
 var timeLeft       = 20;
 var usedCategories = {};
+var gameLog        = []; // [{flag, name, catObj, points, isPenalty}]
 var currentSeed    = '';
 var TIME_PER_TURN  = 20;
 var isRevealing    = false;
@@ -855,6 +927,7 @@ function startGame(modeOrSeed, seedOverride) {
   currentStep    = 0;
   totalScore     = 0;
   usedCategories = {};
+  gameLog        = [];
   isRevealing    = false;
   if (typeof resetHints === 'function') resetHints();
 
@@ -868,7 +941,7 @@ function startGame(modeOrSeed, seedOverride) {
 
   document.getElementById('panel-setup').classList.add('hidden');
   document.getElementById('panel-game').classList.remove('hidden');
-  document.getElementById('game-seed-display').textContent = (gameMode === 'hardcore' ? '💀 ' : '🔑 ') + currentSeed;
+  document.getElementById('game-seed-display').textContent = currentSeed;
   renderCategoryButtons();
   showTurn();
 }
@@ -947,7 +1020,7 @@ function showTurn() {
   document.getElementById('country-flag').textContent = flag;
   applyEmoji(document.getElementById('country-flag'));
   document.getElementById('country-name').textContent = name;
-  document.getElementById('country-sub').textContent  = c.country_code ? '[' + c.country_code + ']' : '';
+  document.getElementById('country-sub').textContent  = '';  // ISO code removed
 
   // Country info button: show/hide based on description availability
   // Hint buttons: show hint1 if desc available, hide hint2 until hint1 revealed
@@ -989,40 +1062,79 @@ function showTurn() {
 
 // ─── TIMER ────────────────────────────────────────────────────────────────────
 function startTimer() {
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   timeLeft = TIME_PER_TURN;
-  updateTimerUI();
-  timerInterval = setInterval(function() {
-    timeLeft--;
-    updateTimerUI();
-    if (timeLeft <= 0) { clearInterval(timerInterval); autoPick(); }
-  }, 1000);
+  var startedAt = Date.now();
+  var fired = false;
+  var rafId = null;
+
+  var fillEl = document.getElementById('progress-fill');
+  fillEl.style.transition = 'none';
+
+  // Store rafId on timerInterval so clearInterval can cancel it
+  function tick() {
+    var elapsed = (Date.now() - startedAt) / 1000;
+    var remaining = Math.max(0, TIME_PER_TURN - elapsed);
+    timeLeft = Math.ceil(remaining);
+    updateTimerUI(remaining);
+    if (!fired && remaining <= 0) {
+      fired = true;
+      autoPick();
+      return;
+    }
+    if (!fired) rafId = requestAnimationFrame(tick);
+  }
+
+  // Override clearInterval to also cancel RAF
+  timerInterval = { _raf: null };
+  rafId = requestAnimationFrame(tick);
+  timerInterval._raf = function() { cancelAnimationFrame(rafId); fired = true; };
+  updateTimerUI(TIME_PER_TURN);
 }
 
-function updateTimerUI() {
+function updateTimerUI(remaining) {
   var numEl  = document.getElementById('timer-num');
   var fillEl = document.getElementById('progress-fill');
-  numEl.textContent   = timeLeft;
-  fillEl.style.width  = (timeLeft / TIME_PER_TURN * 100) + '%';
-  var urgent = timeLeft <= 8;
+  // remaining can be undefined on first call
+  var pct = (remaining !== undefined)
+    ? (remaining / TIME_PER_TURN * 100)
+    : 100;
+  var displayNum = (remaining !== undefined) ? Math.ceil(remaining) : TIME_PER_TURN;
+  numEl.textContent   = displayNum;
+  fillEl.style.width  = pct + '%';
+  var urgent = displayNum <= (gameMode === 'hardcore' ? 4 : 8);
   numEl.classList.toggle('urgent',  urgent);
   fillEl.classList.toggle('urgent', urgent);
+  // Hardcore danger pulse
+  if (gameMode === 'hardcore') {
+    numEl.classList.toggle('danger', displayNum <= 4);
+  } else {
+    numEl.classList.remove('danger');
+  }
 }
 
 // ─── AUTO PICK ────────────────────────────────────────────────────────────────
 function autoPick() {
   if (isRevealing) return;
   isRevealing = true;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   disableAllCatButtons();
   var PENALTY = 200;
   totalScore += PENALTY;
-  document.getElementById('total-score').textContent = totalScore;
 
   var country = gameCountries[currentStep];
   var cName   = getCountryName(country);
   var flag    = country.flag || country.emoji || '🌍';
+  gameLog.push({flag:flag, name:cName, catObj:null, points:PENALTY, isPenalty:true});
 
+  // HC: no overlay, advance silently
+  if (gameMode === 'hardcore') {
+    setTimeout(function() { isRevealing = false; currentStep++; showTurn(); }, 350);
+    return;
+  }
+
+  // Normal mode: show penalty overlay
+  document.getElementById('total-score').textContent = totalScore;
   var overlay = document.createElement('div');
   overlay.id = 'reveal-overlay';
   overlay.innerHTML =
@@ -1033,13 +1145,12 @@ function autoPick() {
     + '<span class="reveal-country-name">' + cName + '</span></div>'
     + '<div style="font-family:\'DM Mono\',monospace;font-size:4em;font-weight:700;color:var(--accent2);margin:16px 0;animation:penaltyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);">+' + PENALTY + '</div>'
     + '<div class="reveal-points-label" style="color:var(--accent2);">' + t('penalty') + '</div>'
-    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('cont') + '</button>'
+    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('skip') + '</button>'
     + '</div>';
   var s = document.createElement('style');
   s.textContent = '@keyframes penaltyPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}';
   overlay.appendChild(s);
   document.body.appendChild(overlay);
-
   var overlayClosed = false;
   function closeOverlay() {
     if (overlayClosed) return;
@@ -1056,7 +1167,7 @@ function autoPick() {
 // ─── HANDLE CHOICE ────────────────────────────────────────────────────────────
 function handleChoice(catId) {
   if (isRevealing) return;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   var btn = document.getElementById('cat-' + catId);
   if (!btn || btn.disabled) return;
 
@@ -1079,13 +1190,26 @@ function handleChoice(catId) {
   applyEmoji(btn);
 
   isRevealing = true;
-  showReveal(flag, cName, catObj, points, function() {
-    isRevealing = false;
-    if (points !== false) totalScore += points;
-    document.getElementById('total-score').textContent = totalScore;
-    currentStep++;
-    showTurn();
-  });
+  var pts = (points === false || points === null || points === undefined || isNaN(points)) ? 0 : Number(points);
+  gameLog.push({flag:flag, name:cName, catObj:catObj, points:pts, isPenalty:false});
+
+  if (gameMode === 'hardcore') {
+    // Hardcore: no reveal overlay, accumulate score silently, advance quickly
+    totalScore += pts;
+    setTimeout(function() {
+      isRevealing = false;
+      currentStep++;
+      showTurn();
+    }, 420);
+  } else {
+    showReveal(flag, cName, catObj, points, function() {
+      isRevealing = false;
+      if (points !== false) totalScore += pts;
+      document.getElementById('total-score').textContent = totalScore;
+      currentStep++;
+      showTurn();
+    });
+  }
 }
 
 function disableAllCatButtons() {
@@ -1105,8 +1229,8 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
     + '<div class="reveal-cat-name">' + catObj.icon + ' ' + catName(catObj) + '</div>'
     + '<div class="reveal-country"><span class="reveal-flag">' + flag + '</span>'
     + '<span class="reveal-country-name">' + cName + '</span></div>'
-    + '<div class="odometer-wrap" id="odo-wrap"></div>'
-    + '<div class="reveal-points-label">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
+    + '<div class="odometer-wrap" id="odo-wrap" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '"></div>'
+    + '<div class="reveal-points-label" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
     + '<button class="reveal-skip" id="reveal-skip-btn">' + t('skip') + '</button>'
     + '</div>';
   document.body.appendChild(overlay);
@@ -1132,11 +1256,9 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
   function onComplete() {
     animDone = true;
     wrap.querySelectorAll('.odo-digit-wrap').forEach(function(d) { d.classList.add('done'); });
-    skipBtn.textContent = t('cont');
-    skipBtn.style.borderColor = 'var(--accent)';
-    skipBtn.style.color = 'var(--accent)';
+    // Auto-close after brief pause — no button text change (avoids the "Passer→Continuer" look)
     skipBtn.onclick = closeReveal;
-    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 2500);
+    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 1800);
   }
 
   function onSkip() {
@@ -1257,31 +1379,145 @@ function solveOptimal() {
 }
 
 function endGame() {
-  clearInterval(timerInterval);
-  // In hardcore: restore score visibility on end screen
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
+
+  // Apply ended theme
   document.body.classList.remove('hardcore');
-  if (gameMode === 'hardcore') {
-    document.body.classList.add('hardcore-ended');
-  }
+  if (gameMode === 'hardcore') document.body.classList.add('hardcore-ended');
+
   document.getElementById('panel-game').classList.add('hidden');
+
+  // Show the dramatic reveal screen first
+  showEndReveal(function() {
+    // After reveal → show normal end panel
+    var revealEl = document.getElementById('end-reveal-screen');
+    revealEl.style.opacity = '0';
+    setTimeout(function() {
+      revealEl.style.display = 'none';
+      showEndPanel();
+    }, 400);
+  });
+}
+
+function showEndReveal(onDone) {
+  var screen = document.getElementById('end-reveal-screen');
+  var container = document.getElementById('reveal-rows-container');
+  var scoreEl = document.getElementById('reveal-running-score');
+  var labelEl = document.getElementById('reveal-running-label');
+  var titleEl = document.getElementById('reveal-screen-title');
+
+  container.innerHTML = '';
+  scoreEl.textContent = '0';
+  screen.style.display = 'flex';
+  screen.style.opacity = '0';
+  screen.style.flexDirection = 'column';
+  screen.style.alignItems = 'center';
+  screen.style.justifyContent = 'center';
+
+  // i18n labels
+  titleEl.textContent = gameMode === 'hardcore'
+    ? (currentLang === 'fr' ? '— RÉVÉLATION —' : currentLang === 'ua' ? '— РОЗКРИТТЯ —' : '— REVEAL —')
+    : (currentLang === 'fr' ? 'Récapitulatif' : currentLang === 'ua' ? 'Підсумок' : 'Summary');
+  labelEl.textContent = currentLang === 'fr' ? 'Score total' : currentLang === 'ua' ? 'Загальний рахунок' : 'Total score';
+
+  // Fix: use inline style for opacity, not class (inline wins over class)
+  setTimeout(function() { screen.style.opacity = '1'; }, 30);
+
+  var delay = gameMode === 'hardcore' ? 420 : 300;
+
+  // Pre-compute running totals so each setTimeout has the right snapshot
+  var cumulative = [];
+  var acc = 0;
+  gameLog.forEach(function(entry) {
+    var add = (entry.points === false || entry.points === null || isNaN(entry.points)) ? 0 : Number(entry.points);
+    acc += add;
+    cumulative.push(acc);
+  });
+
+  // Build all rows (hidden), then reveal one by one
+  gameLog.forEach(function(entry, i) {
+    var row = document.createElement('div');
+    row.className = 'reveal-row' + (entry.isPenalty ? ' penalty-row' : '');
+
+    var catLabel = entry.isPenalty
+      ? (currentLang === 'fr' ? 'Temps écoulé' : currentLang === 'ua' ? 'Час вийшов' : 'Time up')
+      : (entry.catObj ? entry.catObj.icon + ' ' + catName(entry.catObj) : '?');
+
+    var ptsVal = entry.isPenalty ? '+' + entry.points : (entry.points === false ? '—' : entry.points);
+    var ptsClass = entry.isPenalty ? 'rr-pts penalty' : 'rr-pts';
+
+    row.innerHTML =
+      '<span class="rr-flag">' + entry.flag + '</span>' +
+      '<div class="rr-info">' +
+        '<div class="rr-name">' + entry.name + '</div>' +
+        '<div class="rr-cat">' + catLabel + '</div>' +
+      '</div>' +
+      '<span class="' + ptsClass + '">' + ptsVal + '</span>';
+
+    container.appendChild(row);
+    applyEmoji(row);
+
+    setTimeout(function(r, prevScore, newScore) {
+      r.classList.add('shown');
+      if (newScore !== prevScore) {
+        animateCounter(scoreEl, prevScore, newScore, 300, null);
+        scoreEl.classList.remove('score-pop');
+        void scoreEl.offsetWidth;
+        scoreEl.classList.add('score-pop');
+      }
+    }.bind(null, row, i > 0 ? cumulative[i-1] : 0, cumulative[i]), (i + 1) * delay);
+  });
+
+  var totalDelay = (gameLog.length + 1) * delay + 800;
+  setTimeout(onDone, totalDelay);
+}
+
+function animateCounter(el, from, to, duration, onStep) {
+  var start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    var progress = Math.min((ts - start) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    var current = Math.round(from + (to - from) * eased);
+    el.textContent = current;
+    if (onStep) onStep(current);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = to;
+  }
+  requestAnimationFrame(step);
+}
+
+function showEndPanel() {
   document.getElementById('panel-end').classList.remove('hidden');
-  document.getElementById('final-score').textContent = totalScore;
+  // Recompute from gameLog to be bulletproof against any NaN accumulation
+  var computedScore = 0;
+  gameLog.forEach(function(e) {
+    var v = Number(e.points);
+    if (!isNaN(v)) computedScore += v;
+  });
+  var safeScore = computedScore;
+  totalScore = safeScore;
+  document.getElementById('final-score').textContent = safeScore;
   var tl  = t('taglines');
-  var idx = totalScore < 100 ? 0 : totalScore < 300 ? 1 : totalScore < 600 ? 2 : totalScore < 1000 ? 3 : 4;
+  var idx = safeScore < 100 ? 0 : safeScore < 300 ? 1 : safeScore < 600 ? 2 : safeScore < 1000 ? 3 : 4;
   document.getElementById('end-tagline').textContent = tl[idx];
   document.getElementById('seed-display').innerHTML =
     '<strong>' + t('seedShare') + '</strong><span id="seed-value">' + currentSeed + '</span>';
 
+  // Animate final score
+  var scoreEl2 = document.getElementById('final-score');
+  scoreEl2.textContent = '0';
+  animateCounter(scoreEl2, 0, safeScore, 900, null);
+
   // Compute optimal
   optimalResult = solveOptimal();
-  var diff = totalScore - optimalResult.score;
-
-  document.getElementById('opt-your-score').textContent = totalScore;
+  var diff = safeScore - optimalResult.score;
+  document.getElementById('opt-your-score').textContent = safeScore;
   document.getElementById('opt-best-score').textContent = optimalResult.score;
-  applyTranslations(); // re-render i18n in end panel
+  applyTranslations();
 
   var diffEl = document.getElementById('opt-diff-row');
-  if (diff === 0) {
+  if (diff <= 0) {
     diffEl.innerHTML = '<span style="color:var(--accent);font-weight:700;">' + t('optPerfect') + '</span>';
   } else {
     diffEl.innerHTML = t('optDiff') + ': <span style="color:#ffb34f;font-weight:700;">+' + diff + '</span> pts';
@@ -1337,6 +1573,9 @@ function resetToMenu() {
   TIME_PER_TURN = 20;
   gameMode = 'normal';
   document.getElementById('panel-end').classList.add('hidden');
+  var revealEl = document.getElementById('end-reveal-screen');
+  revealEl.style.display = 'none';
+  revealEl.classList.remove('visible');
   document.getElementById('panel-setup').classList.remove('hidden');
   document.getElementById('setup-ready').classList.remove('hidden');
   document.getElementById('loader').classList.add('hidden');

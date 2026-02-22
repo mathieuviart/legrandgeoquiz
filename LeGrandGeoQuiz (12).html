@@ -39,6 +39,46 @@ img.emoji {
   --text: #e8ecf5;
   --muted: #606880;
 }
+/* ── Hardcore mode theme ── */
+body.hardcore {
+  --bg:      #0d0608;
+  --surface: #150a0c;
+  --surface2:#1c0e11;
+  --border:  #2e1018;
+  --text:    #f0dde0;
+  --muted:   #6b4048;
+  --accent:  #ff3d5a;
+  --accent2: #ff8800;
+  --accent3: #c94dff;
+}
+body.hardcore .logo { color: #ff3d5a !important; }
+body.hardcore .highlight { color: #ff3d5a !important; }
+body.hardcore .btn-primary { background: linear-gradient(135deg,#8b0000,#c0142a) !important; border-color:#ff3d5a !important; }
+body.hardcore .progress-fill { background: linear-gradient(90deg,#ff3d5a,#ff8800) !important; }
+body.hardcore .odo-digit { color:#ff3d5a !important; }
+body.hardcore .odo-digit-wrap.done { border-color:#ff3d5a !important; box-shadow:0 0 12px rgba(255,61,90,0.3) !important; }
+body.hardcore #timer-num { color:#ff3d5a !important; }
+body.hardcore .cat-btn:not(:disabled):hover { border-color:#ff3d5a; box-shadow:0 0 12px rgba(255,61,90,0.2); }
+
+/* HC: hide country name, hints, score during game */
+body.hardcore .country-name { display:none !important; }
+body.hardcore .country-info-wrap { display:none !important; }
+body.hardcore #hint-panel { display:none !important; }
+body.hardcore .country-sub { display:none !important; }
+body.hardcore .score-val { visibility:hidden !important; }
+body.hardcore .country-flag { font-size:3.8em !important; }
+body.hardcore .country-flag img.emoji { height:1.1em !important; width:1.1em !important; }
+
+/* HC timer danger */
+body.hardcore .timer-num.danger {
+  animation:hcDanger 0.6s ease-in-out infinite !important;
+  color:#ff3d5a !important;
+}
+@keyframes hcDanger {
+  0%,100% { transform:scale(1); }
+  50%      { transform:scale(1.18); text-shadow:0 0 14px rgba(255,61,90,0.9); }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'Syne', sans-serif;
@@ -89,7 +129,7 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
 .timer-num { font-family:'DM Mono',monospace; font-size:1.3em; font-weight:500; color:var(--accent); min-width:28px; transition:color 0.3s; }
 .timer-num.urgent { color:var(--accent2); }
 .progress-track { flex:1; height:6px; background:var(--border); border-radius:99px; overflow:hidden; }
-.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:width 1s linear, background 0.3s; }
+.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:background 0.3s; }
 .progress-fill.urgent { background:var(--accent2); }
 
 /* country block */
@@ -164,32 +204,315 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
 .reveal-skip { font-family:'DM Mono',monospace; font-size:0.75em; color:var(--muted); background:none; border:1px solid var(--border); border-radius:6px; padding:8px 20px; cursor:pointer; transition:all 0.15s; }
 .reveal-skip:hover { color:var(--text); border-color:var(--muted); }
 
+
+.btn-hardcore {
+  display:block; width:100%;
+  padding:14px 20px; border-radius:10px;
+  background: linear-gradient(135deg, #3a0010, #7a0020);
+  border: 1px solid #ff3d5a;
+  color: #ff8fa0; font-family:'Syne',sans-serif;
+  font-size:1em; font-weight:700; cursor:pointer;
+  letter-spacing:0.04em; transition:all 0.2s;
+  position:relative; overflow:hidden;
+  box-shadow: 0 0 18px rgba(255,61,90,0.15);
+}
+.btn-hardcore:hover {
+  background: linear-gradient(135deg, #550018, #aa0030);
+  color:#fff; border-color:#ff6080;
+  box-shadow: 0 0 30px rgba(255,61,90,0.35);
+  transform:translateY(-2px);
+}
+/* no emoji prefix */
+
+
+/* ── End reveal screen ── */
+#end-reveal-screen {
+  position:fixed; inset:0; z-index:700;
+  background:var(--bg);
+  display:none;
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; transition:opacity 0.4s;
+}
+#end-reveal-screen.visible { opacity:1; }
+
+.reveal-title-big {
+  font-family:'Syne',sans-serif; font-size:1em; font-weight:700;
+  color:var(--muted); letter-spacing:0.15em; text-transform:uppercase;
+  margin-bottom:24px;
+}
+body.hardcore-ended #end-reveal-screen { background:#0d0608; }
+body.hardcore-ended .reveal-title-big { color:#ff3d5a; }
+
+.reveal-rows {
+  width:100%; max-width:440px;
+  display:flex; flex-direction:column; gap:8px;
+  margin-bottom:24px;
+}
+
+.reveal-row {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--border);
+  opacity:0; transform:translateX(-18px);
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  font-family:'DM Mono',monospace;
+}
+.reveal-row.shown { opacity:1; transform:translateX(0); }
+.reveal-row.penalty-row { border-color:var(--accent2); }
+body.hardcore-ended .reveal-row { background:#1c0e11; border-color:#2e1018; }
+body.hardcore-ended .reveal-row.penalty-row { border-color:#ff3d5a; }
+
+.rr-flag { font-size:1.5em; flex-shrink:0; }
+.rr-info { flex:1; min-width:0; }
+.rr-name { font-size:0.75em; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-cat  { font-size:0.65em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-pts  { font-size:1em; font-weight:800; flex-shrink:0; color:var(--accent); }
+.rr-pts.penalty { color:var(--accent2); }
+body.hardcore-ended .rr-pts { color:#ff3d5a; }
+
+.reveal-running-score {
+  font-family:'Syne',sans-serif; font-size:3.5em; font-weight:800;
+  color:var(--accent); line-height:1;
+  transition:color 0.2s;
+}
+body.hardcore-ended .reveal-running-score { color:#ff3d5a; }
+.reveal-running-label {
+  font-family:'DM Mono',monospace; font-size:0.7em; color:var(--muted);
+  letter-spacing:0.1em; text-transform:uppercase; margin-top:6px;
+}
+
+@keyframes scorePop {
+  0%   { transform:scale(1); }
+  40%  { transform:scale(1.18); }
+  100% { transform:scale(1); }
+}
+.score-pop { animation: scorePop 0.25s ease; }
+
+
+/* ── Countdown overlay ── */
+#countdown-overlay {
+  position:fixed; inset:0; z-index:800;
+  display:none; align-items:center; justify-content:center;
+  background:var(--bg); flex-direction:column; gap:12px;
+}
+#countdown-overlay.active { display:flex; }
+.countdown-num {
+  font-family:'Syne',sans-serif; font-size:8em; font-weight:800;
+  color:var(--accent); line-height:1;
+  animation: cdPop 0.85s cubic-bezier(0.34,1.56,0.64,1);
+}
+body.hardcore #countdown-overlay { background:#0d0608; }
+body.hardcore .countdown-num { color:#ff3d5a; text-shadow:0 0 40px rgba(255,61,90,0.5); }
+@keyframes cdPop {
+  0%   { transform:scale(0.3); opacity:0; }
+  60%  { transform:scale(1.1); opacity:1; }
+  100% { transform:scale(1);   opacity:1; }
+}
+@keyframes cdFadeOut {
+  0%   { opacity:1; transform:scale(1); }
+  100% { opacity:0; transform:scale(1.5); }
+}
+.countdown-num.fadeout { animation: cdFadeOut 0.3s ease forwards; }
+.countdown-sub { font-family:'DM Mono',monospace; font-size:0.8em; color:var(--muted); letter-spacing:0.15em; }
+/* ── Custom button ── */
+.btn-custom {
+  display:block; width:100%; padding:14px 20px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--accent3);
+  color:var(--accent3); font-family:'Syne',sans-serif; font-size:1em;
+  font-weight:700; cursor:pointer; letter-spacing:0.04em; transition:all 0.2s;
+}
+.btn-custom:hover { background:rgba(167,139,250,0.12); box-shadow:0 0 20px rgba(167,139,250,0.2); transform:translateY(-2px); }
+/* ── Custom panel ── */
+.custom-section { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px; }
+.custom-label { font-family:'DM Mono',monospace; font-size:0.72em; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; display:block; }
+.custom-value-display { font-family:'Syne',sans-serif; font-size:2em; font-weight:800; color:var(--accent3); text-align:center; margin:8px 0; }
+.custom-slider { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:99px; background:var(--border); outline:none; cursor:pointer; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent3); cursor:pointer; box-shadow:0 0 8px rgba(167,139,250,0.4); }
+.custom-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; border:none; background:var(--accent3); cursor:pointer; }
+.time-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.time-pill { padding:6px 14px; border-radius:99px; cursor:pointer; font-family:'DM Mono',monospace; font-size:0.75em; font-weight:700; border:1px solid var(--border); color:var(--muted); background:var(--surface); transition:all 0.15s; }
+.time-pill.active { border-color:var(--accent3); color:var(--accent3); background:rgba(167,139,250,0.1); box-shadow:0 0 8px rgba(167,139,250,0.2); }
+
+
+/* ── Draft mode selector in custom panel ── */
+.draft-pills { display:flex; gap:10px; margin-top:10px; }
+.draft-pill {
+  flex:1; padding:10px 8px; border-radius:10px; cursor:pointer;
+  font-family:'DM Mono',monospace; font-size:0.72em; font-weight:700;
+  border:1px solid var(--border); color:var(--muted);
+  background:var(--surface); transition:all 0.2s;
+  text-align:center; line-height:1.5;
+}
+.draft-pill span.dp-icon { display:block; font-size:1.8em; margin-bottom:4px; }
+.draft-pill span.dp-label { display:block; }
+.draft-pill.active {
+  border-color:var(--accent3); color:var(--accent3);
+  background:rgba(167,139,250,0.1);
+  box-shadow:0 0 10px rgba(167,139,250,0.2);
+}
+.draft-info-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--border); color:var(--muted);
+  font-family:'DM Mono',monospace; font-size:0.65em; font-weight:700;
+  cursor:pointer; margin-left:6px; vertical-align:middle;
+  border:none; transition:all 0.15s;
+}
+.draft-info-btn:hover { background:var(--accent3); color:var(--bg); }
+.draft-tooltip {
+  display:none; margin-top:10px; padding:10px 12px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; font-family:'DM Mono',monospace; font-size:0.68em;
+  color:var(--muted); line-height:1.6;
+}
+.draft-tooltip.visible { display:block; }
+
+
+/* ── Custom mode in-game theme (violet accents) ── */
+body.custom-mode #timer-num { color: var(--accent3) !important; }
+body.custom-mode .progress-fill { background: linear-gradient(90deg, var(--accent3), #c084fc) !important; }
+body.custom-mode .odo-digit { color: var(--accent3) !important; }
+body.custom-mode .odo-digit-wrap.done { border-color: var(--accent3) !important; box-shadow: 0 0 12px rgba(167,139,250,0.3) !important; }
+body.custom-mode .cat-btn:not(:disabled):hover { border-color: var(--accent3); box-shadow: 0 0 12px rgba(167,139,250,0.2); }
+body.custom-mode .timer-num.urgent { color: var(--accent3) !important; }
+body.custom-mode .progress-fill.urgent { background: linear-gradient(90deg, #c084fc, #a78bfa) !important; }
+body.custom-mode #countdown-overlay { background: var(--bg); }
+body.custom-mode .countdown-num { color: var(--accent3); text-shadow: 0 0 30px rgba(167,139,250,0.4); }
+body.custom-mode .score-val { color: var(--text); }
+
 .hidden { display:none !important; }
 
-/* Country info button */
-.country-info-wrap { display:flex; align-items:center; gap:8px; }
-.country-info-btn {
-  display:inline-flex; align-items:center; justify-content:center;
-  width:20px; height:20px; border-radius:50%;
-  background:rgba(79,255,176,0.1); border:1px solid rgba(79,255,176,0.3);
-  color:var(--accent); font-family:'DM Mono',monospace;
-  font-size:0.65em; font-weight:700; cursor:pointer;
-  flex-shrink:0; line-height:1; transition:all 0.15s; user-select:none;
+/* Optimal combo modal rows */
+.opt-row {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; border-radius:8px; margin-bottom:6px;
+  background:rgba(79,195,247,0.06); border:1px solid rgba(79,195,247,0.15);
+  font-family:'DM Mono',monospace; font-size:0.75em;
 }
-.country-info-btn:hover { background:rgba(79,255,176,0.25); border-color:var(--accent); transform:scale(1.15); }
+.opt-row-flag { font-size:1.3em; flex-shrink:0; }
+.opt-row-country { color:var(--text); font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.opt-row-arrow { color:var(--muted); flex-shrink:0; }
+.opt-row-cat { color:#4fc3f7; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.opt-row-score { color:var(--accent); font-weight:700; flex-shrink:0; }
+.opt-row.was-played { background:rgba(79,255,176,0.06); border-color:rgba(79,255,176,0.2); }
+.opt-row.was-played .opt-row-score { color:var(--accent); }
+.opt-row.not-played .opt-row-score { color:#ffb34f; }
 
-/* Country tooltip (separate from cat tooltip) */
-#country-tooltip {
-  position:fixed; z-index:300; max-width:260px;
-  background:var(--surface); border:1px solid var(--accent);
-  border-radius:10px; padding:10px 14px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);
-  pointer-events:none;
-  opacity:0; transform:translateY(4px) scale(0.97);
-  transition:opacity 0.15s ease,transform 0.15s ease;
-  font-family:'DM Mono',monospace; font-size:0.8em; color:var(--muted); line-height:1.5;
+/* ── Hint reveal animations ── */
+@keyframes hintBoom {
+  0%   { transform: scale(0.4) translateY(8px); opacity: 0; }
+  55%  { transform: scale(1.06) translateY(-2px); opacity: 1; }
+  75%  { transform: scale(0.97); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
-#country-tooltip.visible { opacity:1; transform:translateY(0) scale(1); }
+@keyframes hintSlideIn {
+  0%   { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes costPop {
+  0%   { transform: scale(0.5) translateY(4px); opacity: 0; }
+  60%  { transform: scale(1.2) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); }
+}
+@keyframes ripple {
+  0%   { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+@keyframes scoreFlash {
+  0%   { color: var(--accent2); transform: scale(1.25); }
+  100% { color: var(--accent); transform: scale(1); }
+}
+
+.hint-btn { position: relative; overflow: hidden; }
+.hint-btn .ripple-el {
+  position: absolute; border-radius: 50%;
+  width: 60px; height: 60px;
+  margin-top: -30px; margin-left: -30px;
+  background: rgba(255,255,255,0.18);
+  animation: ripple 0.55s ease-out forwards;
+  pointer-events: none;
+}
+#hint-panel.open { animation: hintBoom 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+.hint-line { animation: hintSlideIn 0.3s ease both; }
+.hint-line-2 { animation-delay: 0.05s; }
+.cost-badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72em; font-weight: 700;
+  padding: 2px 8px; border-radius: 99px;
+  animation: costPop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.cost-badge-1 { background: rgba(79,255,176,0.15); color: var(--accent); border: 1px solid rgba(79,255,176,0.3); }
+.cost-badge-2 { background: rgba(255,179,79,0.15); color: #ffb34f; border: 1px solid rgba(255,179,79,0.3); }
+.score-flash { animation: scoreFlash 0.45s ease both; }
+
+/* Particle burst container */
+.hint-particles {
+  position: fixed; pointer-events: none; z-index: 500;
+}
+.hint-particle {
+  position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  animation: particleFly var(--dur) ease-out forwards;
+}
+@keyframes particleFly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+
+/* Country info button */
+.country-info-wrap { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+
+/* Hint buttons */
+.hint-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:99px; border:none; cursor:pointer;
+  font-family:'DM Mono',monospace; font-size:0.68em; font-weight:500;
+  transition:all 0.15s; user-select:none; white-space:nowrap;
+}
+.hint-btn-1 {
+  background:rgba(79,255,176,0.1); border:1px solid rgba(79,255,176,0.3);
+  color:var(--accent);
+}
+.hint-btn-1:hover:not(:disabled) { background:rgba(79,255,176,0.22); border-color:var(--accent); }
+.hint-btn-2 {
+  background:rgba(255,179,79,0.1); border:1px solid rgba(255,179,79,0.3);
+  color:#ffb34f;
+}
+.hint-btn-2:hover:not(:disabled) { background:rgba(255,179,79,0.22); border-color:#ffb34f; }
+.hint-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.hint-btn.revealed {
+  opacity:0.5; cursor:default; pointer-events:none;
+}
+.hint-cost { font-size:0.85em; opacity:0.7; }
+
+/* Hint panel (inline below country block) */
+#hint-panel {
+  margin-top:8px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:0;
+  overflow:hidden;
+  max-height:0; transition:max-height 0.3s ease, padding 0.3s ease;
+}
+#hint-panel.open { max-height:200px; padding:12px 14px; }
+
+.hint-line {
+  font-family:'DM Mono',monospace; font-size:0.78em; line-height:1.55; color:var(--muted);
+  padding:4px 0;
+}
+.hint-line-1 { color:var(--muted); }
+.hint-line-2 { color:#ffb34f; border-top:1px solid var(--border); padding-top:8px; margin-top:6px; }
+.hint-label {
+  font-size:0.7em; letter-spacing:0.1em; text-transform:uppercase;
+  margin-bottom:3px; display:block;
+}
+.hint-label-1 { color:var(--accent); }
+.hint-label-2 { color:#ffb34f; }
+
+/* Country tooltip not used anymore but keep for compat */
+#country-tooltip { display:none; }
 
 </style>
 </head>
@@ -210,6 +533,7 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
     <p class="subtitle" data-i18n="subtitle"></p>
     <div id="loader"><div class="dot-spin"></div>&nbsp;<span data-i18n="loading"></span></div>
     <div id="setup-ready" class="hidden">
+
       <ul class="rules">
         <li><span class="ico">&#8594;</span><span data-i18n="rule1"></span></li>
         <li><span class="ico">&#8594;</span><span data-i18n="rule2"></span></li>
@@ -217,15 +541,83 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
         <li><span class="ico">&#8594;</span><span data-i18n="rule4"></span></li>
         <li><span class="ico">&#8594;</span><span data-i18n="rule5"></span></li>
       </ul>
-      <div style="margin-bottom:16px;">
-        <label style="font-family:'DM Mono',monospace;font-size:0.75em;color:var(--muted);display:block;margin-bottom:6px;" data-i18n="seedLabel"></label>
-        <div style="display:flex;gap:8px;">
-          <input id="seed-input" type="text" data-i18n-placeholder="seedPlaceholder"
-            style="flex:1;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:0.75em;outline:none;">
-          <button class="btn-secondary" style="margin-top:0;padding:10px 16px;font-size:0.85em;" onclick="startWithSeedInput()" data-i18n="seedLoad"></button>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+
+        <!-- Mode Normal -->
+        <div style="border:1px solid rgba(79,255,176,0.25);border-radius:12px;padding:10px 12px;background:rgba(79,255,176,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Normal</div>
+          <button class="btn-primary" style="display:block;width:100%;margin-top:0;" onclick="startGame('normal')" data-i18n="btnNormal"></button>
+        </div>
+
+        <!-- Mode Hardcore -->
+        <div style="border:1px solid rgba(255,61,90,0.25);border-radius:12px;padding:10px 12px;background:rgba(255,61,90,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:#ff3d5a;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Hardcore</div>
+          <button class="btn-hardcore" onclick="startGame('hardcore')" data-i18n="btnHardcore"></button>
+        </div>
+
+        <!-- Mode Personnalisé + Seed -->
+        <div style="border:1px solid rgba(167,139,250,0.3);border-radius:12px;padding:10px 12px;background:rgba(167,139,250,0.04);">
+          <div style="font-family:'DM Mono',monospace;font-size:0.62em;color:var(--accent3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;" data-i18n="modeCustomLabel"></div>
+          <div style="margin-bottom:10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:0.7em;color:var(--accent3);margin-bottom:6px;" data-i18n="seedLabel"></div>
+            <div style="display:flex;gap:8px;">
+              <input id="seed-input" type="text" data-i18n-placeholder="seedPlaceholder"
+                style="flex:1;padding:9px 12px;background:var(--surface2);border:1px solid rgba(167,139,250,0.3);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:0.75em;outline:none;">
+              <button style="margin-top:0;padding:9px 14px;font-size:0.8em;border-radius:8px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.1);color:var(--accent3);font-family:'DM Mono',monospace;font-weight:700;cursor:pointer;" onclick="startWithSeedInput()" data-i18n="seedLoad"></button>
+            </div>
+          </div>
+          <button class="btn-custom" onclick="openCustomPanel()" data-i18n="btnCustom"></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM SETTINGS -->
+  <div id="panel-custom" class="panel hidden">
+    <div class="logo">&#9672; LeGrandGeoQuiz</div>
+    <h1><span class="highlight" data-i18n="customTitle"></span></h1>
+    <div class="custom-section">
+      <span class="custom-label" data-i18n="customCountLabel"></span>
+      <div class="custom-value-display"><span id="custom-n-display">8</span> <span data-i18n="customCountUnit"></span></div>
+      <input type="range" class="custom-slider" id="custom-n-slider" min="2" max="16" value="8"
+        oninput="document.getElementById('custom-n-display').textContent=this.value">
+    </div>
+    <div class="custom-section">
+      <span class="custom-label" data-i18n="customTimeLabel"></span>
+      <div class="time-pills" id="time-pills">
+        <div class="time-pill" data-secs="10" onclick="selectTimePill(this)">10s</div>
+        <div class="time-pill active" data-secs="20" onclick="selectTimePill(this)">20s</div>
+        <div class="time-pill" data-secs="30" onclick="selectTimePill(this)">30s</div>
+        <div class="time-pill" data-secs="60" onclick="selectTimePill(this)">60s</div>
+        <div class="time-pill" data-secs="0" onclick="selectTimePill(this)" data-i18n="customTimeInf"></div>
+      </div>
+    </div>
+    <div class="custom-section">
+      <span class="custom-label">
+        <span data-i18n="customDraftLabel"></span>
+        <button class="draft-info-btn" onclick="toggleDraftInfo()" title="?">?</button>
+      </span>
+      <div class="draft-tooltip" id="draft-tooltip" data-i18n="customDraftInfo"></div>
+      <div class="draft-pills">
+        <div class="draft-pill" id="draft-pill-auto" onclick="selectDraftPill('auto')">
+          <span class="dp-icon">🔀</span>
+          <span class="dp-label" data-i18n="draftAuto"></span>
+        </div>
+        <div class="draft-pill active" id="draft-pill-cats" onclick="selectDraftPill('cats')">
+          <span class="dp-icon">📊</span>
+          <span class="dp-label" data-i18n="draftCats"></span>
+        </div>
+        <div class="draft-pill" id="draft-pill-countries" onclick="selectDraftPill('countries')">
+          <span class="dp-icon">🌍</span>
+          <span class="dp-label" data-i18n="draftCountries"></span>
         </div>
       </div>
-      <button class="btn-primary" onclick="startGame()" data-i18n="newGame"></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+      <button class="btn-custom" style="background:rgba(167,139,250,0.1);" onclick="startGame('custom')" data-i18n="customStart"></button>
+      <button class="btn-secondary" style="margin-top:0;" onclick="closeCustomPanel()" data-i18n="back"></button>
     </div>
   </div>
 
@@ -247,12 +639,35 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
       <div class="country-info">
         <div class="country-info-wrap">
           <div class="country-name" id="country-name">---</div>
-          <button class="country-info-btn" id="country-info-btn" onclick="toggleCountryTooltip(event)">i</button>
+          <button class="hint-btn hint-btn-1" id="hint-btn-1" onclick="revealHint1(event)">💡 <span data-i18n="hint1btn"></span></button>
+          <button class="hint-btn hint-btn-2" id="hint-btn-2" onclick="revealHint2(event)" style="display:none">🔍 <span data-i18n="hint2btn"></span></button>
         </div>
         <div class="turn-label" id="country-sub"></div>
       </div>
     </div>
+    <div id="hint-panel">
+      <span class="hint-label hint-label-1" id="hint-label-1"></span>
+      <div class="hint-line hint-line-1" id="hint-text-1"></div>
+      <div id="hint-block-2" style="display:none">
+        <span class="hint-label hint-label-2" id="hint-label-2"></span>
+        <div class="hint-line hint-line-2" id="hint-text-2"></div>
+      </div>
+    </div>
     <div class="cats-grid" id="cats-grid"></div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="countdown-overlay">
+    <div class="countdown-num" id="countdown-num">3</div>
+    <div class="countdown-sub" id="countdown-sub"></div>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div id="end-reveal-screen" style="display:none">
+    <div class="reveal-title-big" id="reveal-screen-title">Récapitulatif</div>
+    <div class="reveal-rows" id="reveal-rows-container"></div>
+    <div class="reveal-running-score" id="reveal-running-score">0</div>
+    <div class="reveal-running-label" id="reveal-running-label">Score total</div>
   </div>
 
   <!-- END -->
@@ -261,14 +676,49 @@ h1 { font-size:2.8em; font-weight:800; line-height:1; margin-bottom:6px; }
     <h1><span data-i18n="finalScore"></span><br><span class="highlight" data-i18n="final"></span></h1>
     <div class="end-score" id="final-score">0</div>
     <p class="end-tagline" id="end-tagline"></p>
+
+    <!-- Optimal score block -->
+    <div id="opt-block" style="margin:16px 0;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:left;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.7em;color:var(--muted);letter-spacing:.08em;" data-i18n="optYours"></div>
+          <div style="font-size:1.6em;font-weight:800;color:var(--accent);" id="opt-your-score">—</div>
+        </div>
+        <div style="font-size:1.4em;color:var(--muted);">vs</div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono',monospace;font-size:0.7em;color:var(--muted);letter-spacing:.08em;" data-i18n="optBest"></div>
+          <div style="font-size:1.6em;font-weight:800;color:#4fc3f7;" id="opt-best-score">—</div>
+        </div>
+      </div>
+      <div id="opt-diff-row" style="margin-top:8px;font-family:'DM Mono',monospace;font-size:0.78em;color:var(--muted);text-align:center;"></div>
+      <button id="opt-btn" class="btn-secondary" style="margin-top:12px;width:100%;font-size:0.82em;padding:10px;" onclick="showOptModal()" data-i18n="optBtn"></button>
+    </div>
+
     <div class="seed-box" id="seed-display"></div>
     <button class="btn-secondary" style="margin-top:0;margin-bottom:16px;width:100%;font-size:0.85em;" onclick="copySeed()" data-i18n="copySeed"></button>
-    <button class="btn-primary" onclick="location.reload()" data-i18n="playAgain"></button>
+    <button class="btn-primary" onclick="resetToMenu()" data-i18n="playAgain"></button>
   </div>
 
 </div>
 
 <div id="country-tooltip"></div>
+<!-- Optimal combo modal -->
+<div id="opt-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);overflow-y:auto;padding:20px;">
+  <div style="max-width:480px;margin:auto;background:var(--surface);border:1px solid #4fc3f7;border-radius:16px;padding:24px;box-shadow:0 16px 48px rgba(0,0,0,0.6);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.1em;font-weight:800;color:#4fc3f7;" data-i18n="optTitle"></div>
+      <button onclick="hideOptModal()" style="background:none;border:none;color:var(--muted);font-size:1.4em;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <p id="opt-modal-explain" style="font-family:'DM Mono',monospace;font-size:0.75em;color:var(--muted);margin-bottom:16px;line-height:1.5;"></p>
+    <div id="opt-modal-rows"></div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'DM Mono',monospace;font-size:0.75em;color:var(--muted);" data-i18n="optBest"></span>
+      <span style="font-size:1.4em;font-weight:800;color:#4fc3f7;" id="opt-modal-total"></span>
+    </div>
+    <button class="btn-secondary" style="margin-top:16px;width:100%;font-size:0.85em;" onclick="hideOptModal()" data-i18n="optClose"></button>
+  </div>
+</div>
+
 <div id="cat-tooltip">
   <div class="tt-title" id="tt-title"></div>
   <div class="tt-body"  id="tt-body"></div>
@@ -291,6 +741,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'ex: 3-12-45-..._0-5-11-...',
     seedLoad:       'Charger',
     newGame:        'Nouvelle partie \u2192',
+    modeCustomLabel: 'Personnalis\u00e9 \u0026 Seed',
+    btnCustom:      'Personnalis\u00e9',
+    customTitle:    'Mode personnalis\u00e9',
+    customCountLabel:'Pays \u0026 cat\u00e9gories',
+    customCountUnit: 'tours',
+    customTimeLabel: 'Temps par tour',
+    customTimeInf:  '\u221e Infini',
+    customDraftLabel:'Ordre de sélection',
+    customDraftInfo: '📊 Cat\u00e9gories d\u0027abord\u00a0: on tire les cat\u00e9gories, puis les pays qui les couvrent (diversit\u00e9 des stats). 🌍 Pays d\u0027abord\u00a0: on tire les pays librement, puis on adapte les cat\u00e9gories (laisse plus de chances aux petits pays). 🔀 Auto\u00a0: alterne \u00e0 chaque partie.',
+    draftAuto:      'Auto',
+    draftCats:      'Catégories',
+    draftCountries: 'Pays',
+    customStart:    'Lancer la partie',
+    back:           '\u2190 Retour',
+    btnNormal:      'Partie Normale',
+    btnHardcore:    'Partie Hardcore',
     score:          'Score',
     time:           'Temps',
     turn:           'Tour',
@@ -307,6 +773,25 @@ var TRANSLATIONS = {
     timeUp:         '\u23f1 temps \u00e9coul\u00e9\u00a0!',
     noAnswer:       'Pas de r\u00e9ponse',
     penalty:        'p\u00e9nalit\u00e9 ajout\u00e9e au score',
+    hint1btn:       'Indice +25pts',
+    modeNormalBadge:'Classique',
+    modeNormalTitle:'Normal',
+    modeNormalDesc: '8 pays · 8 cat\u00e9gories · 20s · Indices disponibles',
+    modeHardBadge:  'HARDCORE',
+    modeHardTitle:  'Hardcore',
+    modeHardDesc:   'Drapeaux uniquement · 10s · Score cach\u00e9 · Aucun indice',
+    modeHardRules:  ['Identifiez le pays gr\u00e2ce au drapeau uniquement.','Le score est la valeur du pays dans la cat\u00e9gorie choisie.','10 secondes par tour. Aucun indice disponible.','Score cach\u00e9 pendant la partie. Bonne chance\u00a0!','Objectif\u00a0: minimiser votre score total\u00a0!'],
+    optTitle:       'Combinaison optimale',
+    optYours:       'Votre score',
+    optBest:        'Score optimal',
+    optDiff:        'Diff\u00e9rence',
+    optBtn:         '\uD83E\uDDE0 Voir la combinaison optimale',
+    optClose:       'Fermer',
+    optExplain:     'Si vous aviez su exactement quels pays allaient appara\u00eetre, voici la meilleure assignation possible\u00a0:',
+    optPerfect:     '\uD83C\uDFC6 Score parfait\u00a0!',
+    hint2btn:       'D\u00e9tails +50pts',
+    hintLabel1:     '\uD83D\uDCA1 Indice g\u00e9ographique',
+    hintLabel2:     '\uD83D\uDD0D Informations suppl\u00e9mentaires',
     skip:           'Passer \u2192',
     cont:           'Continuer \u2192',
     invalidSeed:    'Seed invalide\u00a0!',
@@ -326,6 +811,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'e.g. 3-12-45-..._0-5-11-...',
     seedLoad:       'Load',
     newGame:        'New game \u2192',
+    modeCustomLabel: 'Custom \u0026 Seed',
+    btnCustom:      'Custom',
+    customTitle:    'Custom Mode',
+    customCountLabel:'Countries \u0026 categories',
+    customCountUnit: 'turns',
+    customTimeLabel: 'Time per turn',
+    customTimeInf:  '\u221e Infinite',
+    customDraftLabel:'Selection order',
+    customDraftInfo: '📊 Categories first: draw categories, then find matching countries (favors stat diversity). 🌍 Countries first: draw countries freely, then adapt categories (favors geographic diversity, gives small countries more chances). 🔀 Auto: alternates each game.',
+    draftAuto:      'Auto',
+    draftCats:      'Categories',
+    draftCountries: 'Countries',
+    customStart:    'Start game',
+    back:           '\u2190 Back',
+    btnNormal:      'Normal Game',
+    btnHardcore:    'Hardcore Game',
     score:          'Score',
     time:           'Time',
     turn:           'Round',
@@ -342,6 +843,10 @@ var TRANSLATIONS = {
     timeUp:         '\u23f1 time\'s up!',
     noAnswer:       'No answer',
     penalty:        'penalty added to score',
+    hintLabel2:          '🔍 Additional information',
+    hintLabel1:          '💡 Geographic hint',
+    hint2btn:          'Details +50pts',
+    hint1btn:          'Hint +25pts',
     skip:           'Skip \u2192',
     cont:           'Continue \u2192',
     invalidSeed:    'Invalid seed!',
@@ -361,6 +866,22 @@ var TRANSLATIONS = {
     seedPlaceholder:'\u043d\u0430\u043f\u0440. 3-12-45-..._0-5-11-...',
     seedLoad:       '\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438',
     newGame:        '\u041d\u043e\u0432\u0430 \u0433\u0440\u0430 \u2192',
+    modeCustomLabel: '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0026 Seed',
+    btnCustom:      '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f',
+    customTitle:    '\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f',
+    customCountLabel:'\u041a\u0440\u0430\u0457\u043d\u0438 \u0026 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u0457',
+    customCountUnit: '\u0442\u0443\u0440\u0456\u0432',
+    customTimeLabel: '\u0427\u0430\u0441',
+    customTimeInf:  '\u221e \u0411\u0435\u0437\u043b\u0456\u043c',
+    customDraftLabel:'Порядок вибору',
+    customDraftInfo: '📊 Спочатку категорії: тягнемо категорії, потім країни. 🌍 Спочатку країни: тягнемо країни вільно, потім адаптуємо категорії. 🔀 Авто: чергується.',
+    draftAuto:      'Авто',
+    draftCats:      'Категорії',
+    draftCountries: 'Країни',
+    customStart:    '\u041f\u043e\u0447\u0430\u0442\u0438',
+    back:           '\u2190 \u041d\u0430\u0437\u0430\u0434',
+    btnNormal:      '\u041d\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u0430',
+    btnHardcore:    'Hardcore',
     score:          '\u0420\u0430\u0445\u0443\u043d\u043e\u043a',
     time:           '\u0427\u0430\u0441',
     turn:           '\u0425\u0456\u0434',
@@ -377,6 +898,25 @@ var TRANSLATIONS = {
     timeUp:         '\u23f1 \u0447\u0430\u0441 \u0432\u0438\u0439\u0448\u043e\u0432!',
     noAnswer:       '\u041d\u0435\u043c\u0430\u0454 \u0432\u0456\u0434\u043f\u043e\u0432\u0456\u0434\u0456',
     penalty:        '\u0448\u0442\u0440\u0430\u0444 \u0434\u043e\u0434\u0430\u043d\u043e \u0434\u043e \u0440\u0430\u0445\u0443\u043d\u043a\u0443',
+    hint1btn:       '\u041f\u0456\u0434\u043a\u0430\u0437\u043a\u0430 +25',
+    modeNormalBadge:'\u041a\u043b\u0430\u0441\u0438\u043a\u0430',
+    modeNormalTitle:'\u041d\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u0438\u0439',
+    modeNormalDesc: '8 \u043a\u0440\u0430\u0457\u043d · 8 \u043a\u0430\u0442\u0435\u0433 · 20\u0441 · \u041f\u0456\u0434\u043a\u0430\u0437\u043a\u0438',
+    modeHardBadge:  'HARDCORE',
+    modeHardTitle:  'Hardcore',
+    modeHardDesc:   '\u041b\u0438\u0448\u0435 \u043f\u0440\u0430\u043f\u043e\u0440\u0438 · 10\u0441 · \u0420\u0430\u0445\u0443\u043d\u043e\u043a \u043f\u0440\u0438\u0445\u043e\u0432\u0430\u043d\u0438\u0439',
+    modeHardRules:  ['\u0406\u0434\u0435\u043d\u0442\u0438\u0444\u0456\u043a\u0443\u0439\u0442\u0435 \u043a\u0440\u0430\u0457\u043d\u0443 \u0437\u0430 \u043f\u0440\u0430\u043f\u043e\u0440\u043e\u043c.','\u0420\u0430\u0445\u0443\u043d\u043e\u043a = \u0440\u0430\u043d\u0433 \u043a\u0440\u0430\u0457\u043d\u0438.','10 \u0441\u0435\u043a\u0443\u043d\u0434. \u041f\u0456\u0434\u043a\u0430\u0437\u043e\u043a \u043d\u0435\u043c\u0430\u0454.','\u0420\u0430\u0445\u0443\u043d\u043e\u043a \u043f\u0440\u0438\u0445\u043e\u0432\u0430\u043d\u0438\u0439. \u0423\u0434\u0430\u0447\u0456!','\u041c\u0435\u0442\u0430: \u043c\u0456\u043d\u0456\u043c\u0456\u0437\u0443\u0432\u0430\u0442\u0438 \u043e\u0447\u043a\u0438!'],
+    optTitle:       '\u041e\u043f\u0442\u0438\u043c\u0430\u043b\u044c\u043d\u0430 \u043a\u043e\u043c\u0431\u0456\u043d\u0430\u0446\u0456\u044f',
+    optYours:       '\u0412\u0430\u0448 \u0440\u0430\u0445\u0443\u043d\u043e\u043a',
+    optBest:        '\u041e\u043f\u0442\u0438\u043c\u0430\u043b\u044c\u043d\u0438\u0439 \u0440\u0430\u0445\u0443\u043d\u043e\u043a',
+    optDiff:        '\u0420\u0456\u0437\u043d\u0438\u0446\u044f',
+    optBtn:         '\uD83E\uDDE0 \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438 \u043e\u043f\u0442\u0438\u043c\u0430\u043b\u044c\u043d\u0443',
+    optClose:       '\u0417\u0430\u043a\u0440\u0438\u0442\u0438',
+    optExplain:     '\u042f\u043a\u0449\u043e \u0432\u0438 \u0437\u043d\u0430\u043b\u0438 \u0432\u0441\u0456 \u043a\u0440\u0430\u0457\u043d\u0438 \u0437\u0430\u0440\u0430\u043d\u0456\u0435, \u043e\u0441\u044c \u043d\u0430\u0439\u043a\u0440\u0430\u0449\u0435 \u0440\u043e\u0437\u043f\u043e\u0434\u0456\u043b\u0435\u043d\u043d\u044f:',
+    optPerfect:     '\uD83C\uDFC6 \u0406\u0434\u0435\u0430\u043b\u044c\u043d\u0438\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442!',
+    hint2btn:       '\u0414\u0435\u0442\u0430\u043b\u0456 +50',
+    hintLabel1:     '\uD83D\uDCA1 \u0413\u0435\u043e\u0433\u0440\u0430\u0444\u0456\u0447\u043d\u0430 \u043f\u0456\u0434\u043a\u0430\u0437\u043a\u0430',
+    hintLabel2:     '\uD83D\uDD0D \u0414\u043e\u0434\u0430\u0442\u043a\u043e\u0432\u0430 \u0456\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044f',
     skip:           '\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u0438 \u2192',
     cont:           '\u041f\u0440\u043e\u0434\u043e\u0432\u0436\u0438\u0442\u0438 \u2192',
     invalidSeed:    '\u041d\u0435\u0434\u0456\u0439\u0441\u043d\u0438\u0439 \u0441\u0456\u0434!',
@@ -399,7 +939,7 @@ function setLang(lang) {
   });
   document.documentElement.lang = (lang === 'ua') ? 'uk' : lang;
   applyTranslations();
-  if (gameCategories.length > 0 && currentStep < 8) rerenderCategoryButtonNames();
+  if (gameCategories.length > 0 && currentStep < gameCountries.length) rerenderCategoryButtonNames();
 }
 
 function applyTranslations() {
@@ -494,9 +1034,16 @@ var totalScore     = 0;
 var timerInterval  = null;
 var timeLeft       = 20;
 var usedCategories = {};
+var gameLog        = []; // [{flag, name, catObj, points, isPenalty}]
 var currentSeed    = '';
 var TIME_PER_TURN  = 20;
 var isRevealing    = false;
+var gameMode       = 'normal'; // 'normal' | 'hardcore' | 'custom'
+var N_TURNS        = 8;
+var CUSTOM_TIME    = 20;
+var draftMode      = 'auto';  // 'auto'|'cats'|'countries'
+var draftCounter   = 0;       // increments each game, used for alternating
+var lastDraftUsed  = '';      // 'cats' or 'countries' — set during generation
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function initApp() {
@@ -539,27 +1086,75 @@ function decodeSeed(seed) {
   if (parts.length !== 2) return null;
   var ci = parts[0].split('-').map(Number);
   var ki = parts[1].split('-').map(Number);
-  if (ci.length !== 8 || ki.length !== 8) return null;
+  if (ci.length !== ki.length || ci.length < 2) return null;
   if (ci.some(isNaN) || ki.some(isNaN)) return null;
   return {countryIndices:ci, catIndices:ki};
 }
 
-function generateSeed() {
-  var catPool = shuffle(ALL_CATEGORIES.map(function(_,i){return i;})).slice(0,8);
+function generateSeedCatsFirst() {
+  // Classic: pick N categories, then find countries that cover them all
+  var catPool = shuffle(ALL_CATEGORIES.map(function(_,i){return i;})).slice(0,N_TURNS);
   var catIds  = catPool.map(function(i){return ALL_CATEGORIES[i].id;});
   var eligible = countriesDB
     .map(function(c,i){return {c:c,i:i};})
-    .filter(function(x){ return catIds.every(function(id){ return x.c[id] !== false && x.c[id] !== null && x.c[id] !== undefined; }); });
+    .filter(function(x){ return catIds.every(function(id){
+      return x.c[id] !== false && x.c[id] !== null && x.c[id] !== undefined;
+    });});
   var countryPool;
-  if (eligible.length >= 8) {
-    countryPool = shuffle(eligible).slice(0,8);
+  if (eligible.length >= N_TURNS) {
+    countryPool = shuffle(eligible).slice(0,N_TURNS);
   } else {
     var scored = countriesDB.map(function(c,i){
       return {c:c,i:i,score:catIds.filter(function(id){return c[id]!==false&&c[id]!==null&&c[id]!==undefined;}).length};
     }).sort(function(a,b){return b.score-a.score;});
-    countryPool = shuffle(scored.slice(0, Math.min(16,scored.length))).slice(0,8);
+    countryPool = shuffle(scored.slice(0, Math.min(N_TURNS*2+4,scored.length))).slice(0,N_TURNS);
   }
+  lastDraftUsed = 'cats';
   return encodeSeed(countryPool.map(function(x){return x.i;}), catPool);
+}
+
+function generateSeedCountriesFirst() {
+  // New: pick N countries freely, then pick N categories they all share
+  var countryPool = shuffle(countriesDB.map(function(c,i){return {c:c,i:i};})).slice(0, Math.min(N_TURNS*3, countriesDB.length));
+  // Find categories that are valid for ALL chosen countries
+  var chosenCountries = countryPool.slice(0, N_TURNS);
+  var validCats = ALL_CATEGORIES.map(function(cat,i){return {cat:cat,i:i};}).filter(function(x){
+    return chosenCountries.every(function(co){
+      var v = co.c[x.cat.id];
+      return v !== false && v !== null && v !== undefined;
+    });
+  });
+  if (validCats.length >= N_TURNS) {
+    // Enough shared categories — pick N randomly
+    var catPool = shuffle(validCats).slice(0,N_TURNS).map(function(x){return x.i;});
+    lastDraftUsed = 'countries';
+    return encodeSeed(chosenCountries.map(function(x){return x.i;}), catPool);
+  }
+  // Not enough shared cats — relax: pick best countries coverage-wise
+  var allCatIds = ALL_CATEGORIES.map(function(c){return c.id;});
+  var relaxPool = shuffle(countriesDB.map(function(c,i){
+    return {c:c, i:i, score:allCatIds.filter(function(id){var v=c[id];return v!==false&&v!==null&&v!==undefined;}).length};
+  }).sort(function(a,b){return b.score-a.score;}).slice(0, Math.min(N_TURNS*4, countriesDB.length)));
+  var relaxCountries = relaxPool.slice(0, N_TURNS);
+  var relaxCats = ALL_CATEGORIES.map(function(cat,i){return {cat:cat,i:i};}).filter(function(x){
+    return relaxCountries.every(function(co){var v=co.c[x.cat.id];return v!==false&&v!==null&&v!==undefined;});
+  });
+  if (relaxCats.length >= N_TURNS) {
+    var catPool2 = shuffle(relaxCats).slice(0,N_TURNS).map(function(x){return x.i;});
+    lastDraftUsed = 'countries';
+    return encodeSeed(relaxCountries.map(function(x){return x.i;}), catPool2);
+  }
+  // Fallback: cats-first
+  return generateSeedCatsFirst();
+}
+
+function generateSeed() {
+  var useCats;
+  if (draftMode === 'cats')      { useCats = true; }
+  else if (draftMode === 'countries') { useCats = false; }
+  else { useCats = (draftCounter % 2 === 0); } // alternate
+  draftCounter++;
+  return useCats ? generateSeedCatsFirst() : generateSeedCountriesFirst();
 }
 
 function applyGameFromSeed(seed) {
@@ -574,27 +1169,136 @@ function applyGameFromSeed(seed) {
   return true;
 }
 
+
+// ─── CUSTOM MODE ──────────────────────────────────────────────────────────────
+var customTimeSelected = 20;
+
+function selectTimePill(el) {
+  document.querySelectorAll('.time-pill').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  customTimeSelected = parseInt(el.dataset.secs, 10);
+}
+
+function selectDraftPill(mode) {
+  ['auto','cats','countries'].forEach(function(m) {
+    var el = document.getElementById('draft-pill-' + m);
+    if (el) el.classList.toggle('active', m === mode);
+  });
+  draftMode = mode;
+}
+
+function toggleDraftInfo() {
+  var el = document.getElementById('draft-tooltip');
+  el.classList.toggle('visible');
+  // Populate with current lang
+  el.textContent = t('customDraftInfo');
+}
+
+function openCustomPanel() {
+  document.getElementById('panel-setup').classList.add('hidden');
+  document.getElementById('panel-custom').classList.remove('hidden');
+}
+
+function closeCustomPanel() {
+  document.getElementById('panel-custom').classList.add('hidden');
+  document.getElementById('panel-setup').classList.remove('hidden');
+}
+
+// ─── COUNTDOWN ────────────────────────────────────────────────────────────────
+function showCountdown(onDone) {
+  var overlay = document.getElementById('countdown-overlay');
+  var numEl   = document.getElementById('countdown-num');
+  var subEl   = document.getElementById('countdown-sub');
+  var counts  = ['3','2','1','GO'];
+  overlay.classList.add('active');
+  subEl.textContent = '';
+  var i = 0;
+  function showStep() {
+    numEl.className = 'countdown-num';
+    void numEl.offsetWidth;
+    numEl.textContent = counts[i];
+    // On GO: show draft emoji as subtitle
+    if (i === counts.length - 1) {
+      subEl.textContent = lastDraftUsed === 'countries' ? '🌍' : '📊';
+    } else {
+      subEl.textContent = '';
+    }
+    i++;
+    if (i < counts.length) {
+      setTimeout(function() {
+        numEl.classList.add('fadeout');
+        setTimeout(showStep, 300);
+      }, 700);
+    } else {
+      setTimeout(function() {
+        numEl.classList.add('fadeout');
+        setTimeout(function() {
+          overlay.classList.remove('active');
+          subEl.textContent = '';
+          onDone();
+        }, 280);
+      }, 550);
+    }
+  }
+  showStep();
+}
+
 // ─── GAME START ───────────────────────────────────────────────────────────────
-function startGame(seedOverride) {
+function startGame(modeOrSeed, seedOverride) {
+  if (modeOrSeed === 'normal' || modeOrSeed === 'hardcore' || modeOrSeed === 'custom') {
+    gameMode = modeOrSeed;
+  } else if (typeof modeOrSeed === 'string' && modeOrSeed) {
+    seedOverride = modeOrSeed;
+  }
+
+  // Apply N_TURNS and time per mode
+  if (gameMode === 'custom') {
+    // If loading from seed, N_TURNS will be set after applyGameFromSeed
+    if (!seedOverride) {
+      N_TURNS = parseInt(document.getElementById('custom-n-slider').value, 10) || 8;
+    }
+    TIME_PER_TURN = customTimeSelected; // 0 = infinite
+    document.body.classList.remove('hardcore');
+    document.body.classList.add('custom-mode');
+    document.getElementById('panel-custom').classList.add('hidden');
+    document.getElementById('panel-setup').classList.add('hidden');
+  } else {
+    N_TURNS = 8;
+    TIME_PER_TURN = (gameMode === 'hardcore') ? 10 : 20;
+    document.body.classList.remove('custom-mode');
+    if (gameMode === 'hardcore') document.body.classList.add('hardcore');
+    else document.body.classList.remove('hardcore');
+    document.getElementById('panel-setup').classList.add('hidden');
+  }
+
   var seed = seedOverride || generateSeed();
   if (!applyGameFromSeed(seed)) return;
+  // Sync N_TURNS to actual game size (important when loading a seed)
+  N_TURNS = gameCountries.length;
   currentSeed    = seed;
   currentStep    = 0;
   totalScore     = 0;
   usedCategories = {};
+  gameLog        = [];
   isRevealing    = false;
-  document.getElementById('panel-setup').classList.add('hidden');
-  document.getElementById('panel-game').classList.remove('hidden');
-  document.getElementById('game-seed-display').textContent = '🔑 ' + currentSeed;
-  renderCategoryButtons();
-  showTurn();
+  if (typeof resetHints === 'function') resetHints();
+
+  // Show countdown, then launch
+  showCountdown(function() {
+    document.getElementById('panel-game').classList.remove('hidden');
+    document.getElementById('game-seed-display').textContent = currentSeed;
+    renderCategoryButtons();
+    showTurn();
+  });
 }
 
 function startWithSeedInput() {
   var raw = document.getElementById('seed-input').value.trim();
   if (!raw) { alert(t('enterSeed')); return; }
   var match = raw.match(/(\d[\d-]*_[\d-]*\d)/);
-  startGame(match ? match[1] : raw);
+  var seed = match ? match[1] : raw;
+  // Seed games always use custom-mode (blue) so N_TURNS adapts to seed length
+  startGame('custom', seed);
 }
 
 // ─── CATEGORY BUTTONS ─────────────────────────────────────────────────────────
@@ -654,7 +1358,7 @@ function attachInfoListeners() {
 
 // ─── TURN DISPLAY ─────────────────────────────────────────────────────────────
 function showTurn() {
-  if (currentStep >= 8) { endGame(); return; }
+  if (currentStep >= gameCountries.length) { endGame(); return; }
   var c    = gameCountries[currentStep];
   var name = getCountryName(c);
   var flag = c.flag || c.emoji || '🌍';
@@ -662,19 +1366,15 @@ function showTurn() {
   document.getElementById('country-flag').textContent = flag;
   applyEmoji(document.getElementById('country-flag'));
   document.getElementById('country-name').textContent = name;
-  document.getElementById('country-sub').textContent  = c.country_code ? '[' + c.country_code + ']' : '';
+  document.getElementById('country-sub').textContent  = '';  // ISO code removed
 
   // Country info button: show/hide based on description availability
-  var countryInfoBtn = document.getElementById('country-info-btn');
-  var desc = getCountryDesc(c);
-  if (desc) {
-    countryInfoBtn.style.display = 'inline-flex';
-    countryInfoBtn.dataset.desc = desc;
-    countryInfoBtn.dataset.name = name;
-  } else {
-    countryInfoBtn.style.display = 'none';
-  }
-  document.getElementById('turn-label').textContent   = t('turn') + ' ' + (currentStep+1) + ' ' + t('of') + ' 8';
+  // Hint buttons: show hint1 if desc available, hide hint2 until hint1 revealed
+  var btn1 = document.getElementById('hint-btn-1');
+  var desc1 = getCountryDesc(c);
+  btn1.style.display = desc1 ? 'inline-flex' : 'none';
+  document.getElementById('hint-btn-2').style.display = 'none';
+  document.getElementById('turn-label').textContent   = t('turn') + ' ' + (currentStep+1) + ' ' + t('of') + ' ' + gameCountries.length;
   document.getElementById('total-score').textContent  = totalScore;
 
   gameCategories.forEach(function(cat) {
@@ -700,7 +1400,7 @@ function showTurn() {
   });
 
   applyEmoji(document.getElementById('cats-grid'));
-  hideCountryTooltip();
+  resetHints();
   attachInfoListeners();
   clearFeedback();
   startTimer();
@@ -708,40 +1408,90 @@ function showTurn() {
 
 // ─── TIMER ────────────────────────────────────────────────────────────────────
 function startTimer() {
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
+
+  // Infinite time: show ∞, no countdown, no autopick
+  if (TIME_PER_TURN === 0) {
+    var numEl2 = document.getElementById('timer-num');
+    var fillEl2 = document.getElementById('progress-fill');
+    numEl2.textContent = '∞';
+    fillEl2.style.width = '100%';
+    fillEl2.classList.remove('urgent');
+    numEl2.classList.remove('urgent', 'danger');
+    timerInterval = { _raf: function() {} };
+    return;
+  }
+
   timeLeft = TIME_PER_TURN;
-  updateTimerUI();
-  timerInterval = setInterval(function() {
-    timeLeft--;
-    updateTimerUI();
-    if (timeLeft <= 0) { clearInterval(timerInterval); autoPick(); }
-  }, 1000);
+  var startedAt = Date.now();
+  var fired = false;
+  var rafId = null;
+
+  var fillEl = document.getElementById('progress-fill');
+  fillEl.style.transition = 'none';
+
+  function tick() {
+    var elapsed = (Date.now() - startedAt) / 1000;
+    var remaining = Math.max(0, TIME_PER_TURN - elapsed);
+    timeLeft = Math.ceil(remaining);
+    updateTimerUI(remaining);
+    if (!fired && remaining <= 0) {
+      fired = true;
+      autoPick();
+      return;
+    }
+    if (!fired) rafId = requestAnimationFrame(tick);
+  }
+
+  timerInterval = { _raf: null };
+  rafId = requestAnimationFrame(tick);
+  timerInterval._raf = function() { cancelAnimationFrame(rafId); fired = true; };
+  updateTimerUI(TIME_PER_TURN);
 }
 
-function updateTimerUI() {
+function updateTimerUI(remaining) {
   var numEl  = document.getElementById('timer-num');
   var fillEl = document.getElementById('progress-fill');
-  numEl.textContent   = timeLeft;
-  fillEl.style.width  = (timeLeft / TIME_PER_TURN * 100) + '%';
-  var urgent = timeLeft <= 8;
+  // remaining can be undefined on first call
+  var pct = (remaining !== undefined)
+    ? (remaining / TIME_PER_TURN * 100)
+    : 100;
+  var displayNum = (remaining !== undefined) ? Math.ceil(remaining) : TIME_PER_TURN;
+  numEl.textContent   = displayNum;
+  fillEl.style.width  = pct + '%';
+  var urgent = displayNum <= (gameMode === 'hardcore' ? 4 : 8);
   numEl.classList.toggle('urgent',  urgent);
   fillEl.classList.toggle('urgent', urgent);
+  // Hardcore danger pulse
+  if (gameMode === 'hardcore') {
+    numEl.classList.toggle('danger', displayNum <= 4);
+  } else {
+    numEl.classList.remove('danger');
+  }
 }
 
 // ─── AUTO PICK ────────────────────────────────────────────────────────────────
 function autoPick() {
   if (isRevealing) return;
   isRevealing = true;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   disableAllCatButtons();
   var PENALTY = 200;
   totalScore += PENALTY;
-  document.getElementById('total-score').textContent = totalScore;
 
   var country = gameCountries[currentStep];
   var cName   = getCountryName(country);
   var flag    = country.flag || country.emoji || '🌍';
+  gameLog.push({flag:flag, name:cName, catObj:null, points:PENALTY, isPenalty:true});
 
+  // HC: no overlay, advance silently
+  if (gameMode === 'hardcore') {
+    setTimeout(function() { isRevealing = false; currentStep++; showTurn(); }, 350);
+    return;
+  }
+
+  // Normal mode: show penalty overlay
+  document.getElementById('total-score').textContent = totalScore;
   var overlay = document.createElement('div');
   overlay.id = 'reveal-overlay';
   overlay.innerHTML =
@@ -752,13 +1502,12 @@ function autoPick() {
     + '<span class="reveal-country-name">' + cName + '</span></div>'
     + '<div style="font-family:\'DM Mono\',monospace;font-size:4em;font-weight:700;color:var(--accent2);margin:16px 0;animation:penaltyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);">+' + PENALTY + '</div>'
     + '<div class="reveal-points-label" style="color:var(--accent2);">' + t('penalty') + '</div>'
-    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('cont') + '</button>'
+    + '<button class="reveal-skip" id="reveal-skip-btn" style="border-color:var(--accent2);color:var(--accent2);">' + t('skip') + '</button>'
     + '</div>';
   var s = document.createElement('style');
   s.textContent = '@keyframes penaltyPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}';
   overlay.appendChild(s);
   document.body.appendChild(overlay);
-
   var overlayClosed = false;
   function closeOverlay() {
     if (overlayClosed) return;
@@ -775,7 +1524,7 @@ function autoPick() {
 // ─── HANDLE CHOICE ────────────────────────────────────────────────────────────
 function handleChoice(catId) {
   if (isRevealing) return;
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
   var btn = document.getElementById('cat-' + catId);
   if (!btn || btn.disabled) return;
 
@@ -798,13 +1547,26 @@ function handleChoice(catId) {
   applyEmoji(btn);
 
   isRevealing = true;
-  showReveal(flag, cName, catObj, points, function() {
-    isRevealing = false;
-    if (points !== false) totalScore += points;
-    document.getElementById('total-score').textContent = totalScore;
-    currentStep++;
-    showTurn();
-  });
+  var pts = (points === false || points === null || points === undefined || isNaN(points)) ? 0 : Number(points);
+  gameLog.push({flag:flag, name:cName, catObj:catObj, points:pts, isPenalty:false});
+
+  if (gameMode === 'hardcore') {
+    // Hardcore: no reveal overlay, accumulate score silently, advance quickly
+    totalScore += pts;
+    setTimeout(function() {
+      isRevealing = false;
+      currentStep++;
+      showTurn();
+    }, 420);
+  } else {
+    showReveal(flag, cName, catObj, points, function() {
+      isRevealing = false;
+      if (points !== false) totalScore += pts;
+      document.getElementById('total-score').textContent = totalScore;
+      currentStep++;
+      showTurn();
+    });
+  }
 }
 
 function disableAllCatButtons() {
@@ -824,8 +1586,8 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
     + '<div class="reveal-cat-name">' + catObj.icon + ' ' + catName(catObj) + '</div>'
     + '<div class="reveal-country"><span class="reveal-flag">' + flag + '</span>'
     + '<span class="reveal-country-name">' + cName + '</span></div>'
-    + '<div class="odometer-wrap" id="odo-wrap"></div>'
-    + '<div class="reveal-points-label">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
+    + '<div class="odometer-wrap" id="odo-wrap" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '"></div>'
+    + '<div class="reveal-points-label" style="' + (gameMode==='hardcore' ? 'display:none' : '') + '">' + (isFalse ? t('noData') : t('ptsAdded')) + '</div>'
     + '<button class="reveal-skip" id="reveal-skip-btn">' + t('skip') + '</button>'
     + '</div>';
   document.body.appendChild(overlay);
@@ -851,11 +1613,9 @@ function showReveal(flag, cName, catObj, finalValue, onDone) {
   function onComplete() {
     animDone = true;
     wrap.querySelectorAll('.odo-digit-wrap').forEach(function(d) { d.classList.add('done'); });
-    skipBtn.textContent = t('cont');
-    skipBtn.style.borderColor = 'var(--accent)';
-    skipBtn.style.color = 'var(--accent)';
+    // Auto-close after brief pause — no button text change (avoids the "Passer→Continuer" look)
     skipBtn.onclick = closeReveal;
-    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 2500);
+    setTimeout(function() { if (document.getElementById('reveal-overlay')) closeReveal(); }, 1800);
   }
 
   function onSkip() {
@@ -932,25 +1692,287 @@ function clearFeedback() {
 }
 
 // ─── END GAME ─────────────────────────────────────────────────────────────────
+// ─── OPTIMAL SOLVER (brute-force 8! = 40 320 permutations) ──────────────────
+var optimalResult = null; // { score, assignment: [{country, catId, value}] }
+
+function solveOptimal() {
+  var n = gameCountries.length; // 8
+  var cats = gameCategories.map(function(c){ return c.id; });
+  var bestScore = Infinity;
+  var bestPerm  = null;
+  var perm = [0,1,2,3,4,5,6,7].slice(0,n);
+
+  function permute(arr, l) {
+    if (l === n) {
+      var s = 0;
+      for (var i = 0; i < n; i++) {
+        var v = gameCountries[i][cats[arr[i]]];
+        s += (v === false || v === null || v === undefined) ? 999 : Number(v);
+      }
+      if (s < bestScore) { bestScore = s; bestPerm = arr.slice(); }
+      return;
+    }
+    for (var j = l; j < n; j++) {
+      var tmp = arr[l]; arr[l] = arr[j]; arr[j] = tmp;
+      permute(arr, l + 1);
+      tmp = arr[l]; arr[l] = arr[j]; arr[j] = tmp;
+    }
+  }
+  permute(perm, 0);
+
+  var assignment = [];
+  for (var i = 0; i < n; i++) {
+    var ci = gameCountries[i];
+    var catId = cats[bestPerm[i]];
+    var val = ci[catId];
+    assignment.push({
+      country: ci,
+      catId:   catId,
+      catObj:  gameCategories[bestPerm[i]],
+      value:   (val === false || val === null || val === undefined) ? null : Number(val)
+    });
+  }
+  return { score: bestScore, assignment: assignment };
+}
+
 function endGame() {
-  clearInterval(timerInterval);
+  if (timerInterval && timerInterval._raf) timerInterval._raf(); timerInterval = null;
+
+  // Apply ended theme
+  document.body.classList.remove('hardcore','custom-mode');
+  if (gameMode === 'hardcore') document.body.classList.add('hardcore-ended');
+
   document.getElementById('panel-game').classList.add('hidden');
+
+  // Show the dramatic reveal screen first
+  showEndReveal(function() {
+    // After reveal → show normal end panel
+    var revealEl = document.getElementById('end-reveal-screen');
+    revealEl.style.opacity = '0';
+    setTimeout(function() {
+      revealEl.style.display = 'none';
+      showEndPanel();
+    }, 400);
+  });
+}
+
+function showEndReveal(onDone) {
+  var screen = document.getElementById('end-reveal-screen');
+  var container = document.getElementById('reveal-rows-container');
+  var scoreEl = document.getElementById('reveal-running-score');
+  var labelEl = document.getElementById('reveal-running-label');
+  var titleEl = document.getElementById('reveal-screen-title');
+
+  container.innerHTML = '';
+  scoreEl.textContent = '0';
+  screen.style.display = 'flex';
+  screen.style.opacity = '0';
+  screen.style.flexDirection = 'column';
+  screen.style.alignItems = 'center';
+  screen.style.justifyContent = 'center';
+
+  // i18n labels
+  titleEl.textContent = gameMode === 'hardcore'
+    ? (currentLang === 'fr' ? '— RÉVÉLATION —' : currentLang === 'ua' ? '— РОЗКРИТТЯ —' : '— REVEAL —')
+    : (currentLang === 'fr' ? 'Récapitulatif' : currentLang === 'ua' ? 'Підсумок' : 'Summary');
+  labelEl.textContent = currentLang === 'fr' ? 'Score total' : currentLang === 'ua' ? 'Загальний рахунок' : 'Total score';
+
+  // Fix: use inline style for opacity, not class (inline wins over class)
+  setTimeout(function() { screen.style.opacity = '1'; }, 30);
+
+  var delay = gameMode === 'hardcore' ? 420 : 300;
+
+  // Pre-compute running totals so each setTimeout has the right snapshot
+  var cumulative = [];
+  var acc = 0;
+  gameLog.forEach(function(entry) {
+    var add = (entry.points === false || entry.points === null || isNaN(entry.points)) ? 0 : Number(entry.points);
+    acc += add;
+    cumulative.push(acc);
+  });
+
+  // Build all rows (hidden), then reveal one by one
+  gameLog.forEach(function(entry, i) {
+    var row = document.createElement('div');
+    row.className = 'reveal-row' + (entry.isPenalty ? ' penalty-row' : '');
+
+    var catLabel;
+    if (entry.isHint) {
+      if (entry.hintLevel === 1) catLabel = currentLang === 'fr' ? '💡 Indice géo (+25 pts)' : currentLang === 'ua' ? '💡 Підказка (+25)' : '💡 Geo hint (+25 pts)';
+      else catLabel = currentLang === 'fr' ? '🔍 Indice stratégique (+50 pts)' : currentLang === 'ua' ? '🔍 Стратегія (+50)' : '🔍 Strategic hint (+50 pts)';
+    } else if (entry.isPenalty) {
+      catLabel = currentLang === 'fr' ? 'Temps écoulé (+200 pts)' : currentLang === 'ua' ? 'Час вийшов (+200)' : 'Time up (+200 pts)';
+    } else {
+      catLabel = entry.catObj ? entry.catObj.icon + ' ' + catName(entry.catObj) : '?';
+    }
+
+    var ptsVal = entry.isPenalty ? '+' + entry.points : (entry.points === false ? '—' : entry.points);
+    var ptsClass = entry.isPenalty ? 'rr-pts penalty' : 'rr-pts';
+
+    row.innerHTML =
+      '<span class="rr-flag">' + entry.flag + '</span>' +
+      '<div class="rr-info">' +
+        '<div class="rr-name">' + entry.name + '</div>' +
+        '<div class="rr-cat">' + catLabel + '</div>' +
+      '</div>' +
+      '<span class="' + ptsClass + '">' + ptsVal + '</span>';
+
+    container.appendChild(row);
+    applyEmoji(row);
+
+    setTimeout(function(r, prevScore, newScore) {
+      r.classList.add('shown');
+      if (newScore !== prevScore) {
+        animateCounter(scoreEl, prevScore, newScore, 300, null);
+        scoreEl.classList.remove('score-pop');
+        void scoreEl.offsetWidth;
+        scoreEl.classList.add('score-pop');
+      }
+    }.bind(null, row, i > 0 ? cumulative[i-1] : 0, cumulative[i]), (i + 1) * delay);
+  });
+
+  var totalDelay = (gameLog.length + 1) * delay + 800;
+  setTimeout(onDone, totalDelay);
+}
+
+function animateCounter(el, from, to, duration, onStep) {
+  var start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    var progress = Math.min((ts - start) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    var current = Math.round(from + (to - from) * eased);
+    el.textContent = current;
+    if (onStep) onStep(current);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = to;
+  }
+  requestAnimationFrame(step);
+}
+
+function showEndPanel() {
   document.getElementById('panel-end').classList.remove('hidden');
-  document.getElementById('final-score').textContent = totalScore;
+  // Recompute from gameLog to be bulletproof against any NaN accumulation
+  var computedScore = 0;
+  gameLog.forEach(function(e) {
+    var v = Number(e.points);
+    if (!isNaN(v)) computedScore += v;
+  });
+  var safeScore = computedScore;
+  totalScore = safeScore;
+  document.getElementById('final-score').textContent = safeScore;
   var tl  = t('taglines');
-  var idx = totalScore < 100 ? 0 : totalScore < 300 ? 1 : totalScore < 600 ? 2 : totalScore < 1000 ? 3 : 4;
+  var idx = safeScore < 100 ? 0 : safeScore < 300 ? 1 : safeScore < 600 ? 2 : safeScore < 1000 ? 3 : 4;
   document.getElementById('end-tagline').textContent = tl[idx];
   document.getElementById('seed-display').innerHTML =
     '<strong>' + t('seedShare') + '</strong><span id="seed-value">' + currentSeed + '</span>';
+
+  // Animate final score
+  var scoreEl2 = document.getElementById('final-score');
+  scoreEl2.textContent = '0';
+  animateCounter(scoreEl2, 0, safeScore, 900, null);
+
+  // Compute optimal
+  optimalResult = solveOptimal();
+  var diff = safeScore - optimalResult.score;
+  document.getElementById('opt-your-score').textContent = safeScore;
+  document.getElementById('opt-best-score').textContent = optimalResult.score;
+  applyTranslations();
+
+  var diffEl = document.getElementById('opt-diff-row');
+  if (diff <= 0) {
+    diffEl.innerHTML = '<span style="color:var(--accent);font-weight:700;">' + t('optPerfect') + '</span>';
+  } else {
+    diffEl.innerHTML = t('optDiff') + ': <span style="color:#ffb34f;font-weight:700;">+' + diff + '</span> pts';
+  }
+}
+
+function showOptModal() {
+  if (!optimalResult) return;
+  var modal = document.getElementById('opt-modal');
+  document.getElementById('opt-modal-explain').textContent = t('optExplain');
+
+  var rowsEl = document.getElementById('opt-modal-rows');
+  rowsEl.innerHTML = '';
+  var realTotal = 0;
+
+  optimalResult.assignment.forEach(function(a, i) {
+    var flag  = a.country.flag || a.country.emoji || '🌍';
+    var cname = getCountryName(a.country);
+    var cname_short = cname.length > 18 ? cname.slice(0,17) + '…' : cname;
+    var catname = a.catObj ? catName(a.catObj) : a.catId;
+    var catname_short = catname.length > 18 ? catname.slice(0,17) + '…' : catname;
+    var val   = a.value !== null ? a.value : '?';
+    if (a.value !== null) realTotal += a.value;
+
+    var row = document.createElement('div');
+    row.className = 'opt-row';
+    row.innerHTML =
+      '<span class="opt-row-flag">' + flag + '</span>' +
+      '<span class="opt-row-country" title="' + cname + '">' + cname_short + '</span>' +
+      '<span class="opt-row-arrow">→</span>' +
+      '<span class="opt-row-cat" title="' + catname + '">' + catname_short + '</span>' +
+      '<span class="opt-row-score">' + val + '</span>';
+    rowsEl.appendChild(row);
+  });
+
+  applyEmoji(rowsEl);
+  document.getElementById('opt-modal-total').textContent = optimalResult.score;
+  modal.style.display = 'block';
+  setTimeout(function(){ modal.style.opacity='1'; }, 10);
+}
+
+function hideOptModal() {
+  document.getElementById('opt-modal').style.display = 'none';
+}
+
+// Close modal on background click
+document.getElementById('opt-modal').addEventListener('click', function(e) {
+  if (e.target === this) hideOptModal();
+});
+
+function resetToMenu() {
+  document.body.classList.remove('hardcore','hardcore-ended','custom-mode');
+  TIME_PER_TURN = 20;
+  N_TURNS = 8;
+  gameMode = 'normal';
+  draftMode = 'auto';
+  document.getElementById('panel-custom').classList.add('hidden');
+  document.getElementById('panel-end').classList.add('hidden');
+  var revealEl = document.getElementById('end-reveal-screen');
+  revealEl.style.display = 'none';
+  revealEl.classList.remove('visible');
+  document.getElementById('panel-setup').classList.remove('hidden');
+  document.getElementById('setup-ready').classList.remove('hidden');
+  document.getElementById('loader').classList.add('hidden');
+  applyTranslations();
 }
 
 function copySeed() {
-  navigator.clipboard.writeText(currentSeed).then(function() {
-    var btn = document.querySelector('[onclick="copySeed()"]');
-    var orig = btn.textContent;
-    btn.textContent = '✓ OK!';
-    setTimeout(function() { btn.textContent = orig; }, 2000);
-  });
+  var btn = document.querySelector('[onclick="copySeed()"]');
+  var orig = btn ? btn.textContent : '';
+  var text = currentSeed || '';
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      if (btn) { btn.textContent = '✓ Copié !'; setTimeout(function() { btn.textContent = orig; }, 2000); }
+    }).catch(function() {
+      // fallback
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (btn) { btn.textContent = '✓ Copié !'; setTimeout(function() { btn.textContent = orig; }, 2000); }
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (btn) { btn.textContent = '✓ Copié !'; setTimeout(function() { btn.textContent = orig; }, 2000); }
+  }
 }
 
 
@@ -1174,44 +2196,402 @@ function getCountryDesc(c) {
   return null;
 }
 
+// ─── COUNTRY HINTS LEVEL 2 ────────────────────────────────────────────────────
+var COUNTRY_HINTS2 = {
+  AF:{fr:"Parmi les pays les plus pauvres du monde. Économie quasi inexistante. Carrefour stratégique entre Asie centrale et Moyen-Orient. Conflits armés permanents.",en:"Among the world's poorest countries. Almost no formal economy. Strategic crossroads between Central Asia and the Middle East. Permanent armed conflicts.",ua:"Серед найбідніших країн. Стратегічне перехрестя Центральної Азії та Близького Сходу. Постійні збройні конфлікти."},
+  DZ:{fr:"Grand producteur de gaz naturel et pétrole. Armée parmi les plus puissantes d'Afrique. Économie très dépendante des hydrocarbures.",en:"Major natural gas and oil producer. One of Africa's most powerful armies. Economy heavily reliant on hydrocarbons.",ua:"Великий виробник газу та нафти. Одна з найпотужніших армій Африки. Економіка залежить від вуглеводнів."},
+  AR:{fr:"Puissance économique régionale mais dette chroniquement élevée et inflation record. Grands producteurs de soja et de bœuf.",en:"Regional economic power but chronically high debt and record inflation. Major soybean and beef producers.",ua:"Регіональна економічна сила, але хронічно висока заборгованість та рекордна інфляція. Великий виробник сої та яловичини."},
+  AM:{fr:"Petite économie enclavée, dépendante des transferts de la diaspora. Conflits avec l'Azerbaïdjan. Industrie minière (cuivre, or).",en:"Small landlocked economy dependent on diaspora remittances. Conflicts with Azerbaijan. Mining industry (copper, gold).",ua:"Мала економіка, залежна від переказів діаспори. Конфлікти з Азербайджаном. Видобуток міді та золота."},
+  AU:{fr:"Économie très développée, l'une des plus riches per capita. Immenses ressources minières. Très faible densité de population. Exportateur majeur de charbon et de minerai de fer.",en:"Highly developed economy, one of the richest per capita. Vast mining resources. Very low population density. Major coal and iron ore exporter.",ua:"Розвинена економіка, одна з найбагатших. Величезні гірничодобувні ресурси. Мала густота населення."},
+  AT:{fr:"Économie très développée. Neutre militairement depuis 1955. Fort tourisme alpin. Siège de nombreuses organisations internationales.",en:"Highly developed economy. Militarily neutral since 1955. Strong Alpine tourism. Headquarters of many international organizations.",ua:"Розвинена економіка. Нейтральна з 1955 р. Альпійський туризм. Штаб-квартири міжнародних організацій."},
+  AZ:{fr:"Grand producteur de pétrole et de gaz de la mer Caspienne. Régime autoritaire. Conflit récent sur le Haut-Karabakh.",en:"Major Caspian Sea oil and gas producer. Authoritarian regime. Recent conflict over Nagorno-Karabakh.",ua:"Великий виробник нафти та газу. Авторитарний режим. Нещодавній конфлікт за Нагірний Карабах."},
+  BE:{fr:"Siège de l'UE et de l'OTAN. Économie très développée, grand exportateur. Fortement endetté. Pays divisé entre francophones et néerlandophones.",en:"EU and NATO headquarters. Highly developed economy, major exporter. Heavily indebted. Country divided between French and Dutch speakers.",ua:"Штаб-квартира ЄС та НАТО. Розвинена економіка. Велика заборгованість. Лінгвістично розділена країна."},
+  BD:{fr:"Économie émergente, grand exportateur de textile. Parmi les pays les plus densément peuplés. Très vulnérable aux cyclones et inondations.",en:"Emerging economy, major textile exporter. Among the world's most densely populated. Very vulnerable to cyclones and flooding.",ua:"Економіка, що розвивається, великий експортер текстилю. Одна з найгустіше заселених країн. Вразлива до ударів стихії."},
+  BY:{fr:"Régime autoritaire très proche de la Russie. Économie planifiée, peu réformée. Sous sanctions depuis 2020.",en:"Highly authoritarian regime closely aligned with Russia. Planned economy, barely reformed. Under sanctions since 2020.",ua:"Авторитарний режим, тісно пов'язаний з Росією. Планова нереформована економіка. Санкції з 2020 р."},
+  BO:{fr:"Grandes réserves de lithium parmi les premières mondiales. Gaz naturel. L'un des plus pauvres d'Amérique du Sud.",en:"World-leading lithium reserves. Natural gas. One of the poorest in South America.",ua:"Одні з найбільших запасів літію. Природний газ. Одна з найбідніших країн Південної Америки."},
+  BA:{fr:"Économie en développement post-guerre civile des années 1990. Gouvernance très complexe. Candidat à l'UE.",en:"Developing economy post-1990s civil war. Very complex governance. EU candidate.",ua:"Економіка відновлюється після громадянської війни 1990-х. Складне управління. Кандидат у члени ЄС."},
+  BR:{fr:"Plus grande économie d'Amérique latine, 9e mondiale. Immenses ressources naturelles. Armée la plus grande d'Amérique du Sud. Forte inégalité.",en:"Largest Latin American economy, 9th globally. Vast natural resources. Largest military in South America. High inequality.",ua:"Найбільша економіка Латинської Америки. Найбільша армія Південної Америки. Висока нерівність."},
+  BG:{fr:"Parmi les moins développées de l'UE. Forte émigration. Ancienne économie communiste en transition.",en:"Among the EU's least developed. High emigration. Former communist economy in transition.",ua:"Серед найменш розвинених в ЄС. Висока еміграція. Колишня комуністична економіка."},
+  BF:{fr:"Parmi les plus pauvres du monde. Grave insécurité liée aux groupes armés sahéliens. Ressources en or.",en:"Among the world's poorest. Severe insecurity from Sahelian armed groups. Gold resources.",ua:"Серед найбідніших. Серйозна нестабільність від озброєних груп. Золото."},
+  CA:{fr:"Économie du G7. Immenses ressources naturelles (pétrole, gaz, bois, minerais). Très faible densité de population.",en:"G7 economy. Vast natural resources (oil, gas, timber, minerals). Very low population density.",ua:"Економіка G7. Величезні природні ресурси. Дуже мала густота населення."},
+  CL:{fr:"Économie la plus développée d'Amérique du Sud. Premier producteur mondial de cuivre. Faible corruption régionale.",en:"Most developed economy in South America. World's top copper producer. Low regional corruption.",ua:"Найрозвиненіша економіка Південної Америки. №1 виробник міді. Низька корупція."},
+  CN:{fr:"2e économie mondiale. Plus grande armée en effectifs. Exportateur n°1 mondial. Membre permanent du Conseil de sécurité de l'ONU. Puissance nucléaire.",en:"World's 2nd economy. Largest military by headcount. #1 global exporter. Permanent UN Security Council member. Nuclear power.",ua:"2-га економіка світу. Найбільша армія. №1 експортер. Постійний член РБ ООН. Ядерна держава."},
+  CO:{fr:"Une des plus grandes économies d'Amérique du Sud. Grand producteur de café. Longtemps touché par les narcotrafiquants et guérillas.",en:"One of South America's largest economies. Major coffee producer. Long affected by drug cartels and guerrillas.",ua:"Одна з найбільших економік Південної Америки. Великий виробник кави. Тривалий вплив наркокартелів."},
+  CD:{fr:"Richesses naturelles immenses (cobalt, coltan, diamants, or). Malgré cela, l'un des plus pauvres. Conflits armés récurrents à l'est.",en:"Immense natural wealth (cobalt, coltan, diamonds, gold). Despite this, one of the poorest. Recurrent armed conflicts in the east.",ua:"Величезні природні ресурси. Але одна з найбідніших. Збройні конфлікти на сході."},
+  CU:{fr:"Économie planifiée sous embargo américain. Fort niveau d'éducation et de santé malgré la pauvreté.",en:"Planned economy under US embargo. High education and health levels despite poverty.",ua:"Планова економіка під американським ембарго. Висока освіта та охорона здоров'я попри бідність."},
+  CZ:{fr:"Économie la plus industrialisée d'Europe centrale. Grand constructeur automobile. Parmi les moins corrompus d'Europe de l'Est.",en:"Most industrialized economy in Central Europe. Major car manufacturer. Among the least corrupt in Eastern Europe.",ua:"Найбільш індустріалізована економіка Центральної Європи. Великий виробник автомобілів."},
+  DK:{fr:"Parmi les plus riches per capita. Leader en énergie éolienne. Très faible corruption. Haut niveau de bien-être social.",en:"Among the richest per capita. Wind energy leader. Very low corruption. High social welfare.",ua:"Серед найбагатших. Лідер у вітровій енергетиці. Дуже низька корупція."},
+  EG:{fr:"Économie la plus importante du monde arabe après l'Arabie saoudite. Canal de Suez stratégique. Grande armée.",en:"Most important Arab economy after Saudi Arabia. Strategic Suez Canal. Large military.",ua:"Найважливіша арабська економіка після Саудівської Аравії. Суецький канал. Велика армія."},
+  ET:{fr:"Économie à croissance rapide mais très pauvre. Grande armée. Siège de l'Union africaine. Population très jeune.",en:"Fast-growing but very poor economy. Large military. African Union HQ. Very young population.",ua:"Швидке зростання, але бідна. Велика армія. Штаб-квартира АС. Молоде населення."},
+  FI:{fr:"Économie très développée. Leader mondial en éducation (modèle PISA). Parmi les moins corrompus.",en:"Highly developed economy. Global education leader (PISA model). Among world's least corrupt.",ua:"Розвинена економіка. Світовий лідер в освіті. Серед найменш корумпованих."},
+  FR:{fr:"5e ou 6e économie mondiale, membre du G7. Puissance nucléaire, membre permanent du Conseil de sécurité de l'ONU. 1re destination touristique mondiale.",en:"5th or 6th economy worldwide, G7 member. Nuclear power, permanent UN Security Council member. World's top tourist destination.",ua:"5-та або 6-та економіка світу, G7. Ядерна держава, постійний член РБ ООН. №1 туристичне призначення."},
+  DE:{fr:"Plus grande économie d'Europe, 3e ou 4e mondiale. Leader de l'industrie automobile et chimique. Membre fondateur de l'UE.",en:"Europe's largest economy, 3rd or 4th globally. Leader in automotive and chemical industries. EU founding member.",ua:"Найбільша економіка Європи. Лідер автомобільної промисловості. Засновник ЄС."},
+  GH:{fr:"Économie stable d'Afrique de l'Ouest. Producteur d'or et de cacao. Démocratie modèle pour l'Afrique.",en:"Stable West African economy. Gold and cocoa producer. Model democracy for Africa.",ua:"Стабільна економіка Африки. Виробник золота та какао. Зразкова демократія."},
+  GR:{fr:"Grave crise financière post-2008. Forte dette publique. Tourisme majeur. Armée relativement forte en raison des tensions avec la Turquie.",en:"Severe post-2008 financial crisis. High public debt. Major tourism. Relatively strong military due to tensions with Turkey.",ua:"Фінансова криза після 2008 р. Великий борг. Важливий туризм. Напруга з Туреччиною."},
+  HU:{fr:"Ancienne économie communiste. Régime politique controversé en Europe. Faible natalité et vieillissement rapide.",en:"Former communist economy. Controversial political regime in Europe. Low birth rate and rapid aging.",ua:"Колишня комуністична економіка. Суперечливий режим. Низька народжуваність."},
+  IN:{fr:"3e économie mondiale en PPA. Puissance nucléaire. Très grande armée. Membre des BRICS. Géant technologique.",en:"3rd economy by PPP. Nuclear power. Very large military. BRICS member. Tech giant.",ua:"3-тя економіка за ПКС. Ядерна держава. Велика армія. БРІКС. Технологічний гігант."},
+  ID:{fr:"Plus grande économie d'Asie du Sud-Est, G20. Grand producteur de charbon, d'huile de palme et de nickel.",en:"Largest Southeast Asian economy, G20. Major coal, palm oil and nickel producer.",ua:"Найбільша економіка Південно-Східної Азії, G20. Великий виробник вугілля та пальмової олії."},
+  IR:{fr:"Grande économie du Moyen-Orient sous sanctions. Immenses réserves pétrolières. Puissance militaire régionale. Programme nucléaire controversé.",en:"Large Middle Eastern economy under sanctions. Huge oil reserves. Regional military power. Controversial nuclear program.",ua:"Велика економіка під санкціями. Нафтові запаси. Регіональна воєнна сила. Ядерна програма."},
+  IQ:{fr:"Grandes réserves pétrolières (top 5). Économie très dépendante du pétrole. Instabilité récurrente depuis les années 1980.",en:"Major oil reserves (top 5). Oil-dependent economy. Recurring instability since the 1980s.",ua:"Великі нафтові запаси (топ-5). Залежна від нафти. Нестабільність з 1980-х."},
+  IE:{fr:"Économie très développée, parmi les plus riches per capita. Siège européen de grandes multinationales. Très faible corruption.",en:"Highly developed, among Europe's richest. European HQ of major multinationals. Very low corruption.",ua:"Одна з найбагатших в Європі. Штаб-квартири транснаціональних корпорацій. Дуже низька корупція."},
+  IL:{fr:"Économie très développée, 'Start-up Nation'. Puissance nucléaire présumée. Armée technologiquement avancée.",en:"Highly developed, 'Start-up Nation'. Presumed nuclear power. Technologically advanced military.",ua:"'Стартап-нація'. Ймовірна ядерна держава. Передова армія."},
+  IT:{fr:"3e économie de la zone euro, 8e mondiale. Leader du luxe et de la mode. Forte dette publique. Instabilité politique chronique.",en:"3rd eurozone economy, 8th globally. Leader in luxury and fashion. High public debt. Chronic political instability.",ua:"3-тя економіка єврозони. Лідер розкоші та моди. Великий борг. Хронічна нестабільність."},
+  JP:{fr:"3e économie mondiale. Technologies de pointe. Armée puissante. Population la plus vieillissante au monde.",en:"World's 3rd economy. Cutting-edge technology. Powerful military. World's most aging population.",ua:"3-тя економіка. Передові технології. Потужна армія. Найстаріше населення у світі."},
+  KZ:{fr:"Grandes réserves de pétrole, gaz et uranium. Économie la plus développée d'Asie centrale. Régime autoritaire.",en:"Large oil, gas and uranium reserves. Most developed Central Asian economy. Authoritarian regime.",ua:"Нафта, газ, уран. Найрозвиненіша економіка Центральної Азії. Авторитарний режим."},
+  KE:{fr:"Plus grande économie d'Afrique de l'Est. Hub technologique africain. Centre financier régional.",en:"East Africa's largest economy. African tech hub. Regional financial center.",ua:"Найбільша економіка Східної Африки. Технологічний хаб. Регіональний фінансовий центр."},
+  KP:{fr:"Régime totalitaire très fermé. Puissance nucléaire. Armée très grande en effectifs. Économie isolée et peu développée.",en:"Very closed totalitarian regime. Nuclear power. Very large military by headcount. Isolated and underdeveloped economy.",ua:"Закритий тоталітарний режим. Ядерна держава. Велика армія. Ізольована економіка."},
+  KR:{fr:"4e économie d'Asie. Leader de la construction navale, de l'électronique (Samsung, LG) et de l'automobile (Hyundai, Kia).",en:"4th Asian economy. Leader in shipbuilding, electronics (Samsung, LG) and cars (Hyundai, Kia).",ua:"4-та економіка Азії. Лідер суднобудування, електроніки (Samsung) та авто (Hyundai)."},
+  KW:{fr:"Très riches réserves pétrolières, un des plus riches per capita. Économie très dépendante du pétrole.",en:"Very large oil reserves, one of the world's richest per capita. Oil-dependent economy.",ua:"Великі нафтові запаси. Одна з найбагатших країн. Залежить від нафти."},
+  LY:{fr:"Grandes réserves pétrolières. Instabilité politique majeure depuis 2011. Économie très dépendante du pétrole.",en:"Large oil reserves. Major political instability since 2011. Oil-dependent economy.",ua:"Нафтові запаси. Нестабільність з 2011 р. Залежність від нафти."},
+  MX:{fr:"2e économie d'Amérique latine, G20. Grand producteur pétrolier. Exportateur industriel vers les États-Unis. Violence chronique liée aux cartels.",en:"2nd Latin American economy, G20. Major oil producer. Industrial exporter to the US. Chronic cartel violence.",ua:"2-га економіка Латинської Америки, G20. Нафта. Промисловий експорт до США. Картелі."},
+  MA:{fr:"Économie la plus stable du Maghreb. Grand producteur de phosphates (top 3 mondial). Hub d'investissement en Afrique.",en:"Most stable Maghreb economy. Top-3 global phosphate producer. Investment hub for Africa.",ua:"Найстабільніша економіка Магрибу. Топ-3 фосфатів. Інвестиційний хаб Африки."},
+  NL:{fr:"5e économie de l'UE. Premier port d'Europe (Rotterdam). Grand exportateur agricole. Centre financier mondial.",en:"5th EU economy. Europe's largest port (Rotterdam). Major agricultural exporter. Global financial center.",ua:"5-та економіка ЄС. Найбільший порт (Роттердам). Великий аграрний експортер."},
+  NZ:{fr:"Économie très développée. Faible corruption. Qualité de vie parmi les meilleures du monde.",en:"Highly developed economy. Low corruption. Quality of life among the world's best.",ua:"Розвинена економіка. Низька корупція. Одна з найвищих якостей життя."},
+  NG:{fr:"Plus grande économie d'Afrique. Grand producteur de pétrole. Grande pauvreté malgré les ressources. Armée la plus puissante d'Afrique de l'Ouest.",en:"Africa's largest economy. Major oil producer. Widespread poverty despite resources. West Africa's strongest military.",ua:"Найбільша економіка Африки. Нафта. Попри ресурси — бідність. Найсильніша армія Західної Африки."},
+  NO:{fr:"Un des plus riches per capita grâce au pétrole. Plus grand fonds souverain du monde. Très faible corruption.",en:"One of the world's richest per capita thanks to oil. World's largest sovereign wealth fund. Very low corruption.",ua:"Одна з найбагатших завдяки нафті. Найбільший суверенний фонд. Дуже низька корупція."},
+  PK:{fr:"Puissance nucléaire. Grande armée. Instabilité politique et sécuritaire récurrente. Relations tendues avec l'Inde.",en:"Nuclear power. Large military. Recurring political and security instability. Tense relations with India.",ua:"Ядерна держава. Велика армія. Нестабільність. Напружені відносини з Індією."},
+  PL:{fr:"Plus grande économie d'Europe de l'Est, 6e de l'UE. Armée parmi les plus puissantes d'Europe. Membre UE et OTAN.",en:"Largest Eastern European economy, 6th in EU. One of Europe's most powerful armies. EU and NATO member.",ua:"Найбільша економіка Східної Європи. Одна з найпотужніших армій. ЄС та НАТО."},
+  PT:{fr:"Économie développée mais parmi les moins riches d'Europe occidentale. Forte dépendance au tourisme. Membre fondateur de l'OTAN.",en:"Developed but among Western Europe's least wealthy. Strong tourism dependence. NATO founding member.",ua:"Розвинена, але менш заможна. Велика залежність від туризму. Засновник НАТО."},
+  QA:{fr:"Un des plus riches per capita grâce au gaz. 3e réserves mondiales de gaz. A organisé la Coupe du Monde 2022.",en:"One of the world's richest per capita thanks to gas. 3rd largest gas reserves globally. Hosted the 2022 World Cup.",ua:"Одна з найбагатших завдяки газу. 3-ті запаси газу. ЧС-2022."},
+  RO:{fr:"Économie en développement rapide dans l'UE. Producteur agricole et pétrolier. Forte émigration.",en:"Fast-developing EU economy. Agricultural and oil producer. High emigration.",ua:"Швидко зростаюча економіка в ЄС. Аграрний та нафтовий виробник. Масова еміграція."},
+  RU:{fr:"2e arsenal nucléaire mondial. Membre permanent du Conseil de sécurité de l'ONU. Grand producteur de pétrole et gaz. Sous sanctions depuis 2022.",en:"World's 2nd nuclear arsenal. Permanent UN Security Council member. Major oil and gas producer. Under sanctions since 2022.",ua:"2-й ядерний арсенал. Постійний член РБ ООН. Нафта та газ. Санкції з 2022 р."},
+  SA:{fr:"1er exportateur mondial de pétrole. Économie la plus grande du monde arabe. Armée puissante. Aucune démocratie.",en:"World's #1 oil exporter. Largest Arab economy. Powerful military. No democracy.",ua:"№1 експортер нафти. Найбільша арабська економіка. Потужна армія. Без демократії."},
+  SG:{fr:"Hub financier et commercial mondial malgré sa très petite superficie. Un des plus riches per capita. Port parmi les plus actifs.",en:"Global financial hub despite tiny size. One of the richest per capita. One of the world's busiest ports.",ua:"Глобальний фінансовий хаб. Один з найбагатших. Один з найактивніших портів."},
+  ZA:{fr:"Plus grande économie d'Afrique australe. Producteur d'or, platine et diamants. Très forte inégalité.",en:"Largest southern African economy. Gold, platinum and diamond producer. Very high inequality.",ua:"Найбільша економіка Південної Африки. Золото, платина, алмази. Висока нерівність."},
+  ES:{fr:"4e économie de la zone euro. Grand producteur d'huile d'olive et de vin. Tourisme majeur. Chômage élevé.",en:"4th eurozone economy. Major olive oil and wine producer. Major tourism. High unemployment.",ua:"4-та економіка єврозони. Оливкова олія та вино. Великий туризм. Безробіття."},
+  LK:{fr:"Grave crise financière en 2022. Grand producteur de thé. Dépendance au tourisme.",en:"Severe financial crisis in 2022. Major tea producer. Tourism dependent.",ua:"Фінансова криза 2022 р. Великий виробник чаю. Залежність від туризму."},
+  SE:{fr:"Économie très développée. Marques mondiales (IKEA, H&M, Volvo). Très faible corruption. Entrée récente dans l'OTAN.",en:"Highly developed. Global brands (IKEA, H&M, Volvo). Very low corruption. Recently joined NATO.",ua:"Розвинена. Глобальні бренди (IKEA, H&M). Нещодавно в НАТО. Низька корупція."},
+  CH:{fr:"Parmi les plus riches per capita. Centre financier mondial. Sièges d'organisations internationales. Neutralité historique.",en:"Among the world's richest per capita. Global financial center. International organization HQs. Historic neutrality.",ua:"Серед найбагатших. Фінансовий центр. Штаб-квартири міжнародних організацій. Нейтралітет."},
+  SY:{fr:"Pays ravagé par la guerre civile depuis 2011. Économie en ruines. Sous sanctions internationales.",en:"Country ravaged by civil war since 2011. Economy in ruins. Under international sanctions.",ua:"Громадянська війна з 2011 р. Зруйнована економіка. Міжнародні санкції."},
+  TR:{fr:"G20. Armée parmi les plus grandes de l'OTAN. Inflation très élevée. Carrefour Europe-Asie. Exportateur textile et agricole.",en:"G20. One of NATO's largest armies. Very high inflation. Europe-Asia crossroads. Textile and agricultural exporter.",ua:"G20. Велика армія НАТО. Висока інфляція. Міст Європа-Азія."},
+  TM:{fr:"Grand producteur de gaz naturel (top 5). Régime très autoritaire. Économie quasi entièrement étatique.",en:"Major gas producer (top 5). Very authoritarian regime. Almost fully state-controlled economy.",ua:"Великий виробник газу (топ-5). Авторитарний режим. Державна економіка."},
+  UA:{fr:"Économie en guerre depuis 2022. Grand exportateur de blé et d'acier. Armée en forte expansion.",en:"Economy at war since 2022. Major wheat and steel exporter. Rapidly expanding military.",ua:"Економіка у стані війни. Великий експортер зерна та сталі. Армія зростає."},
+  AE:{fr:"Hub financier et commercial mondial (Dubaï). Un des plus riches per capita. Économie diversifiée.",en:"Global financial and commercial hub (Dubai). One of the richest per capita. Diversified economy.",ua:"Глобальний хаб (Дубай). Одна з найбагатших. Диверсифікована економіка."},
+  GB:{fr:"5e ou 6e économie mondiale. Puissance nucléaire, membre permanent du Conseil de sécurité de l'ONU. Centre financier mondial (Londres). Brexit 2020.",en:"5th or 6th economy. Nuclear power, permanent UN Security Council member. Global financial center (London). Brexit 2020.",ua:"5-та або 6-та економіка. Ядерна держава, РБ ООН. Лондон — фінансовий центр. Brexit 2020."},
+  US:{fr:"1ère économie mondiale. 1ère puissance militaire. Puissance nucléaire. Membre permanent du Conseil de sécurité de l'ONU. Dollar = monnaie de réserve mondiale.",en:"World's #1 economy. #1 military power. Nuclear power. Permanent UN Security Council member. Dollar is the global reserve currency.",ua:"№1 економіка. №1 військова сила. Ядерна держава. РБ ООН. Долар — світова резервна валюта."},
+  UZ:{fr:"Grandes réserves de gaz et d'or. Régime autoritaire en transition. Grand exportateur de coton.",en:"Large gas and gold reserves. Authoritarian regime in transition. Major cotton exporter.",ua:"Газ та золото. Авторитарний режим. Великий експортер бавовни."},
+  VE:{fr:"Plus grandes réserves prouvées de pétrole au monde. Grave crise économique et humanitaire. Régime autoritaire. Forte émigration.",en:"World's largest proven oil reserves. Severe economic and humanitarian crisis. Authoritarian regime. High emigration.",ua:"Найбільші запаси нафти. Криза. Авторитарний режим. Масова еміграція."},
+  VN:{fr:"Économie émergente à forte croissance. Ancien pays communiste ouvert depuis les années 1990. Grand producteur de riz et de café.",en:"Fast-growing emerging economy. Former communist country opened since 1990s. Major rice and coffee producer.",ua:"Швидке зростання. Колишній комунізм, відкрита торгівля з 1990-х. Рис та кава."},
+  ZM:{fr:"Grand producteur de cuivre (top mondial). Économie très dépendante du cours du cuivre.",en:"Major copper producer (global top). Economy highly dependent on copper prices.",ua:"Великий виробник міді. Залежність від ціни міді."},
+  ZW:{fr:"Économie instable, connue pour son hyperinflation historique. Riches ressources minières (platine, diamants, or).",en:"Unstable economy, known for historic hyperinflation. Rich mineral resources (platinum, diamonds, gold).",ua:"Нестабільна економіка та гіперінфляція. Платина, алмази, золото."},
+  EC:{fr:"Membre de l'OPEP. Producteur de pétrole et grand exportateur de bananes. Économie dollarisée.",en:"OPEC member. Oil producer and major banana exporter. Dollarized economy.",ua:"ОПЕК. Нафта та банани. Доларизована економіка."},
+  PE:{fr:"Producteur majeur de cuivre, d'or et d'argent. Économie en développement rapide. Inégalités élevées.",en:"Major copper, gold and silver producer. Fast-developing economy. High inequality.",ua:"Мідь, золото, срібло. Швидко зростає. Висока нерівність."},
+  PH:{fr:"Économie émergente à forte croissance. Exportateur de travailleurs à l'étranger. Hub d'outsourcing. Catastrophes naturelles fréquentes.",en:"Fast-growing emerging economy. Major overseas worker exporter. Outsourcing hub. Frequent natural disasters.",ua:"Зростаюча економіка. Велика трудова еміграція. Аутсорсинг. Стихійні лиха."},
+  GT:{fr:"Plus grande économie d'Amérique centrale. Importantes inégalités. Exportateur de café, bananes et sucre.",en:"Largest Central American economy. Major inequalities. Coffee, banana and sugar exporter.",ua:"Найбільша економіка Центральної Америки. Нерівність. Кава та банани."},
+  PY:{fr:"Économie agricole. Grand producteur de soja et d'énergie hydroélectrique (Itaipu).",en:"Agricultural economy. Major soybean and hydroelectric power producer (Itaipu).",ua:"Сільськогосподарська. Соя та гідроенергія (Ітайпу)."},
+  CM:{fr:"Économie la plus diversifiée d'Afrique centrale. Producteur de pétrole, cacao et café.",en:"Most diversified Central African economy. Oil, cocoa and coffee producer.",ua:"Найдиверсифікованіша у Центральній Африці. Нафта, какао, кава."},
+  TN:{fr:"Économie émergente, la plus développée du Maghreb après le Maroc. Tourisme important. Crise politique depuis 2011.",en:"Emerging economy, most developed in Maghreb after Morocco. Important tourism. Political crisis since 2011.",ua:"Найрозвиненіший Магриб після Марокко. Туризм. Криза з 2011 р."},
+  SN:{fr:"Hub régional d'Afrique de l'Ouest. Économie stable et diversifiée. Siège de nombreuses ONG.",en:"West Africa's regional hub. Stable, diversified economy. HQ of many NGOs.",ua:"Регіональний хаб Африки. Стабільна економіка. Штаб-квартири НУО."},
+  MG:{fr:"Biodiversité unique au monde. Économie pauvre, dépendante de l'agriculture. Vanille de haute qualité.",en:"Unique worldwide biodiversity. Poor, agriculture-dependent economy. High-quality vanilla.",ua:"Унікальне біорізноманіття. Бідна. Якісна ваніль."},
+  ML:{fr:"Grande richesse culturelle (Tombouctou). Insécurité liée aux groupes armés au nord. Parmi les plus pauvres.",en:"Rich cultural heritage (Timbuktu). Armed groups in the north. Among the world's poorest.",ua:"Томбукту. Збройні групи на півночі. Серед найбідніших."},
+  NE:{fr:"Un des plus pauvres du monde. Grandes réserves d'uranium. Défis climatiques majeurs (désertification).",en:"One of the world's poorest. Large uranium reserves. Major climate challenges (desertification).",ua:"Серед найбідніших. Уран. Серйозна посуха та спустелення."},
+  AO:{fr:"Grand producteur de pétrole et de diamants. Malgré les ressources, grande pauvreté. Économie post-guerre civile.",en:"Major oil and diamond producer. Despite resources, widespread poverty. Post-civil war economy.",ua:"Нафта та алмази. Попри ресурси — бідність. Після громадянської війни."},
+  OM:{fr:"Producteur de pétrole modéré. Régime stable et diplomatie équilibrée dans le Golfe. Diversification économique.",en:"Moderate oil producer. Stable regime and balanced diplomacy in the Gulf. Economic diversification.",ua:"Помірний виробник нафти. Стабільний режим. Збалансована дипломатія."},
+  KG:{fr:"Parmi les plus pauvres d'Asie centrale. Dépendant des transferts de la diaspora. Ressources hydrauliques importantes.",en:"Among the poorest in Central Asia. Dependent on diaspora remittances. Important water resources.",ua:"Серед найбідніших у Центральній Азії. Переказ грошей. Водні ресурси."},
+  GE:{fr:"Économie en développement, réformes importantes. Hub touristique du Caucase. Conflits territoriaux avec la Russie.",en:"Developing economy with major reforms. Caucasus tourist hub. Territorial conflicts with Russia.",ua:"Реформована економіка. Туристичний хаб Кавказу. Конфлікти з Росією."},
+  BI:{fr:"Parmi les plus pauvres du monde. Instabilité politique récurrente. Agriculture de subsistance.",en:"Among the world's poorest. Recurring political instability. Subsistence agriculture.",ua:"Серед найбідніших. Нестабільність. Натуральне господарство."},
+  BY:{fr:"Régime autoritaire proche de la Russie. Économie planifiée. Sous sanctions depuis 2020.",en:"Authoritarian regime aligned with Russia. Planned economy. Under sanctions since 2020.",ua:"Авторитарний режим, пов'язаний з Росією. Планова. Санкції з 2020."},
+  UY:{fr:'Économie la plus stable et équitable d\'Amérique du Sud. Très faible corruption. État providence fort. Grand exportateur agricole (viande, soja, laine).',en:'South America\'s most stable and equal economy. Very low corruption. Strong welfare state. Major agricultural exporter (beef, soybeans, wool).',ua:'Найстабільніша економіка Південної Америки. Низька корупція. Сильна соціальна держава. Агроекспорт.'},
+  LT:{fr:'Économie la plus développée des trois États baltes. Hub technologique et financier régional. Membre UE et OTAN depuis 2004. Très bon niveau d\'éducation.',en:'Most developed of the three Baltic states. Regional tech and financial hub. EU and NATO member since 2004. High education level.',ua:'Найрозвиненіша з трьох балтійських держав. Технологічний та фінансовий хаб. ЄС та НАТО з 2004 р.'},
+  SI:{fr:'Économie la plus développée des Balkans, proche du niveau d\'Europe occidentale. Fort secteur industriel. Tourisme alpin important. Membre UE et OTAN depuis 2004.',en:'Most developed Balkan economy, close to Western European levels. Strong industrial sector. Important Alpine tourism. EU and NATO member since 2004.',ua:'Найрозвиненіша балканська економіка. Сильний промисловий сектор. Гірський туризм. ЄС та НАТО з 2004 р.'},
+  MN:{fr:'Économie dépendante des ressources minières (charbon, cuivre, or). Régime démocratique entre deux grandes puissances. Nomadisme encore présent. Très faible densité de population.',en:'Economy dependent on mining (coal, copper, gold). Democratic regime between two superpowers. Nomadism still present. Very low population density.',ua:'Залежна від видобутку корисних копалин. Демократія між двома наддержавами. Номадизм. Дуже мала густота населення.'},
+  TH:{fr:'2e économie d\'Asie du Sud-Est. Hub touristique majeur et mondial. Grand exportateur de riz, caoutchouc et produits électroniques. Régimes militaires fréquents.',en:'2nd largest Southeast Asian economy. Major global tourism hub. Large rice, rubber and electronics exporter. Frequent military coups.',ua:'2-га економіка Південно-Східної Азії. Великий туристичний хаб. Рис, гума, електроніка. Часті перевороти.'},
+  HR:{fr:'Membre de l\'UE depuis 2013, de l\'OTAN depuis 2009. Tourisme majeur sur l\'Adriatique. Économie post-guerre en développement continu. Zone euro depuis 2023.',en:'EU member since 2013, NATO since 2009. Major Adriatic tourism. Post-war economy in continuous development. Eurozone since 2023.',ua:'ЄС з 2013, НАТО з 2009. Туризм на Адріатиці. Постконфліктна економіка. Єврозона з 2023 р.'},
+  LV:{fr:'Hub financier et logistique de la région baltique. Économie ouverte et très exportatrice. Forte émigration depuis 2004. Membre UE et OTAN.',en:'Financial and logistics hub of the Baltic region. Open, highly export-oriented economy. High emigration since 2004. EU and NATO member.',ua:'Фінансовий та логістичний хаб Балтії. Висока еміграція з 2004 р. ЄС та НАТО.'},
+  RS:{fr:'Candidate à l\'UE. Économie en développement, ancienne économie communiste. Tensions régionales avec le Kosovo. Important producteur agricole.',en:'EU candidate. Developing economy, former communist. Regional tensions with Kosovo. Important agricultural producer.',ua:'Кандидат в ЄС. Економіка розвивається. Напруга з Косово. Аграрний виробник.'},
+  EE:{fr:'Surnommée \'République numérique\'. Gouvernement en ligne pionnier (e-résidence). Économie très développée pour la région baltique. Très faible corruption.',en:'Nicknamed \'Digital Republic\'. Pioneer of online government (e-residency). Highly developed economy for the Baltic region. Very low corruption.',ua:'\'Цифрова республіка\'. Піонер е-уряду. Розвинена економіка. Дуже низька корупція.'},
+  MD:{fr:'L\'un des pays les plus pauvres d\'Europe. Très dépendant des transferts de la diaspora. Importante production vinicole. Conflit gelé en Transnistrie.',en:'One of Europe\'s poorest countries. Highly dependent on diaspora remittances. Important wine production. Frozen conflict in Transnistria.',ua:'Одна з найбідніших в Європі. Залежність від переказів діаспори. Вино. Заморожений конфлікт у Придністров\'ї.'},
+  IS:{fr:'Économie très développée basée sur la géothermie, la pêche et le tourisme. Quasiment 100% d\'énergie renouvelable. Très faible corruption. Armée inexistante.',en:'Highly developed economy based on geothermal energy, fishing and tourism. Nearly 100% renewable energy. Very low corruption. No standing army.',ua:'Геотермальна енергія, рибальство, туризм. Майже 100% відновлювана енергетика. Без армії. Дуже низька корупція.'},
+  MU:{fr:'Hub financier et touristique de l\'océan Indien. Économie parmi les plus développées d\'Afrique. Faible corruption, bonne gouvernance. Forte diaspora indienne.',en:'Financial and tourism hub of the Indian Ocean. One of Africa\'s most developed economies. Low corruption, good governance. Large Indian diaspora.',ua:'Фінансовий хаб Індійського океану. Одна з найрозвиненіших в Африці. Низька корупція. Велика індійська діаспора.'},
+  SK:{fr:'Économie industrielle intégrée dans l\'UE (depuis 2004). Grand producteur d\'automobiles per capita. Zone euro depuis 2009. Faible corruption régionale.',en:'Industrial economy integrated into EU (since 2004). Major car producer per capita. Eurozone since 2009. Low regional corruption.',ua:'Промислова економіка в ЄС. Великий виробник авто на душу населення. Єврозона з 2009 р.'},
+  LU:{fr:'2e PIB per capita mondial. Capitale financière de l\'UE. Siège de nombreuses institutions européennes. Très faible corruption. Hub d\'investissement mondial.',en:'2nd highest GDP per capita globally. EU\'s financial capital. Seat of many EU institutions. Very low corruption. Global investment hub.',ua:'2-й ВВП на душу в світі. Фінансова столиця ЄС. Штаб-квартири інститутів ЄС. Дуже низька корупція.'},
+  CR:{fr:'Seul pays d\'Amérique latine sans armée (abolie en 1949). Fort éco-tourisme. Économie de services en développement rapide. Énergie quasi 100% renouvelable.',en:'Only Latin American country with no army (abolished 1949). Strong eco-tourism. Fast-growing service economy. Nearly 100% renewable energy.',ua:'Єдина латиноамериканська країна без армії (скасована 1949). Екотуризм. Майже 100% відновлювана енергія.'},
+  SV:{fr:'Économie dollarisée (dollar US). Premier pays à adopter le Bitcoin comme monnaie légale (2021). Problèmes récurrents de gangs et violence. Maquiladoras.',en:'Dollarized economy. First country to adopt Bitcoin as legal tender (2021). Recurring gang and violence problems. Maquiladoras.',ua:'Доларизована економіка. Перша країна з біткоїном як законним платіжним засобом (2021). Проблеми з бандами.'},
+  MT:{fr:'Hub financier et touristique de la Méditerranée. Économie très développée pour sa taille. Siège de nombreuses sociétés de jeux en ligne. Membre UE (2004).',en:'Mediterranean financial and tourism hub. Highly developed economy for its size. HQ of many online gaming companies. EU member (2004).',ua:'Фінансовий хаб Середземномор\'я. Розвинена для своїх розмірів. Онлайн-гемблінг. ЄС з 2004 р.'},
+  MY:{fr:'Économie émergente avancée d\'Asie du Sud-Est. Grand exportateur de semi-conducteurs, d\'huile de palme et de caoutchouc. Pétrole via Petronas. Pays à revenus intermédiaires supérieurs.',en:'Advanced emerging economy in Southeast Asia. Major semiconductor, palm oil and rubber exporter. Oil via Petronas. Upper-middle-income country.',ua:'Розвинена ринкова економіка. Напівпровідники, пальмова олія, каучук. Petronas (нафта).'},
+  KH:{fr:'Économie à forte croissance basée sur le textile et le tourisme (Angkor Vat). Régime semi-autoritaire. Très dépendant de l\'aide internationale. Séquelles des Khmers rouges.',en:'Fast-growing economy based on textiles and tourism (Angkor Wat). Semi-authoritarian regime. Highly dependent on international aid. Lingering effects of the Khmer Rouge.',ua:'Швидке зростання: текстиль та туризм (Ангкор Ват). Напівавторитарний режим. Спадщина Червоних кхмерів.'},
+  DO:{fr:'Plus grande économie des Caraïbes. Fort tourisme (Punta Cana). Exportateur de cigares et de cacao. Inégalités importantes. Forte dépendance aux transferts de la diaspora.',en:'Largest Caribbean economy. Strong tourism (Punta Cana). Cigar and cocoa exporter. High inequality. Strong dependence on diaspora transfers.',ua:'Найбільша економіка Карибів. Туризм (Пунта-Кана). Сигари та какао. Нерівність.'},
+  PA:{fr:'Canal de Panama = revenu stratégique et transit mondial. Hub financier offshore. Économie très dollarisée. Fort secteur des services et de la logistique.',en:'Panama Canal = strategic revenue and global transit. Offshore financial hub. Highly dollarized economy. Strong services and logistics sector.',ua:'Панамський канал. Офшорний фінансовий хаб. Доларизована. Логістика та послуги.'},
+  CY:{fr:'Hub financier méditerranéen (et offshore). Membre de l\'UE depuis 2004. Île divisée entre la République de Chypre (sud) et la zone turque (nord). Tourisme majeur.',en:'Mediterranean (and offshore) financial hub. EU member since 2004. Island divided between the Republic of Cyprus (south) and Turkish zone (north). Major tourism.',ua:'Фінансовий хаб. ЄС з 2004. Острів розділений між Республікою та турецькою зоною. Туризм.'},
+  AL:{fr:'Économie parmi les moins développées d\'Europe. Candidate à l\'UE. Forte émigration. Tourisme en forte croissance. Réformes anti-corruption en cours.',en:'One of Europe\'s least developed economies. EU candidate. High emigration. Fast-growing tourism. Ongoing anti-corruption reforms.',ua:'Одна з найменш розвинених в Європі. Кандидат ЄС. Висока еміграція. Туризм зростає.'},
+  JM:{fr:'Économie basée sur le tourisme, la bauxite et l\'agriculture (café, sucre). Forte diaspora mondiale. Centre culturel (reggae, Bob Marley). Criminalité élevée.',en:'Economy based on tourism, bauxite and agriculture (coffee, sugar). Large global diaspora. Cultural center (reggae, Bob Marley). High crime.',ua:'Туризм, боксит, сільське господарство. Велика діаспора. Культурний центр (регі, Боб Марлі). Висока злочинність.'},
+  LB:{fr:'Économie effondrée depuis 2019 (l\'une des pires crises financières de l\'histoire moderne). Ancienne \'Suisse du Moyen-Orient\'. Reconstruction très difficile. Forte diaspora.',en:'Economy collapsed since 2019 (one of the worst financial crises in modern history). Former \'Switzerland of the Middle East\'. Very difficult reconstruction. Large diaspora.',ua:'Економіка в колапсі з 2019 р. Колишня \'Швейцарія Близького Сходу\'. Велика діаспора. Криза.'},
+  LS:{fr:'Enclave pauvre dans l\'Afrique du Sud. Économie très dépendante des transferts de travailleurs miniers en RSA. Textile en développement. Très fort taux de VIH/SIDA.',en:'Poor enclave within South Africa. Economy highly dependent on remittances from miners in SA. Growing textile sector. Very high HIV/AIDS rate.',ua:'Бідна анклав у ПАР. Перекази від шахтарів. Текстиль. Дуже високий рівень ВІЛ/СНІДу.'},
+  SZ:{fr:'Petite monarchie absolue d\'Afrique australe. Économie très dépendante de l\'Afrique du Sud. Fort taux de VIH/SIDA au monde. Industrie textile pour l\'export.',en:'Small absolute monarchy in southern Africa. Economy highly dependent on South Africa. One of the world\'s highest HIV/AIDS rates. Textile industry for export.',ua:'Абсолютна монархія. Залежить від ПАР. Найвищий рівень ВІЛ у світі. Текстиль.'},
+  GY:{fr:'Récentes découvertes pétrolières offshore majeures (depuis 2015) qui transforment l\'économie. Anciennement dépendant de la bauxite et du sucre. Très faible densité.',en:'Major recent offshore oil discoveries (since 2015) transforming the economy. Formerly dependent on bauxite and sugar. Very low population density.',ua:'Великі нафтові відкриття з 2015 р. Раніше — боксит та цукор. Дуже мала густота населення.'},
+  VU:{fr:'Économie basée sur l\'agriculture, la pêche et le tourisme. Paradis fiscal et offshore. Très vulnérable aux cyclones et catastrophes naturelles. Peu développé.',en:'Economy based on agriculture, fishing and tourism. Tax haven and offshore center. Highly vulnerable to cyclones and natural disasters. Underdeveloped.',ua:'Сільське господарство, рибальство, туризм. Офшорна зона. Вразлива до циклонів.'},
+  TT:{fr:'Économie basée sur le pétrole et le gaz naturel (réserves importantes). L\'une des plus riches des Caraïbes per capita. Berceau du calypso et du steel pan.',en:'Economy based on oil and natural gas (significant reserves). One of the richest in the Caribbean per capita. Birthplace of calypso and steel pan music.',ua:'Нафта та природний газ. Одна з найбагатших у Карибах за ВВП на душу. Батьківщина каліпсо.'},
+  ME:{fr:'Candidate à l\'UE. Membre de l\'OTAN depuis 2017. Économie basée sur le tourisme adriatique et les investissements étrangers. Ancienne partie de la Yougoslavie.',en:'EU candidate. NATO member since 2017. Economy based on Adriatic tourism and foreign investment. Former part of Yugoslavia.',ua:'Кандидат ЄС. НАТО з 2017. Туризм та іноземні інвестиції. Колишня частина Югославії.'},
+  NA:{fr:'Grand producteur de diamants et d\'uranium. Économie minière importante. Très faible densité de population. Forte inégalité héritée de l\'apartheid namibien.',en:'Major diamond and uranium producer. Important mining economy. Very low population density. High inequality inherited from Namibian apartheid.',ua:'Алмази та уран. Гірничодобувна економіка. Висока нерівність, спадщина апартеїду.'},
+  BW:{fr:'Succès économique remarquable d\'Afrique australe grâce aux diamants (Debswana). L\'une des plus faibles corruptions d\'Afrique. Fort taux de VIH mais bonne réponse sanitaire.',en:'Remarkable economic success in southern Africa thanks to diamonds (Debswana). One of Africa\'s lowest corruption levels. High HIV rate but good health response.',ua:'Успіх завдяки алмазам (Debswana). Низька корупція в Африці. Висока поширеність ВІЛ.'},
+  HT:{fr:'L\'un des pays les plus pauvres de l\'hémisphère occidental. Instabilité politique chronique. Séisme dévastateur de 2010. Forte dépendance à l\'aide internationale.',en:'One of the poorest countries in the Western Hemisphere. Chronic political instability. Devastating 2010 earthquake. Highly dependent on international aid.',ua:'Одна з найбідніших країн Заходу. Хронічна нестабільність. Землетрус 2010 р. Залежність від допомоги.'},
+  MW:{fr:'Parmi les pays les plus pauvres du monde. Économie agricole (tabac, thé, sucre). Fort taux de VIH. Peu de ressources naturelles exploitées.',en:'Among the world\'s poorest countries. Agricultural economy (tobacco, tea, sugar). High HIV rate. Few exploited natural resources.',ua:'Серед найбідніших. Аграрна (тютюн, чай, цукор). Висока поширеність ВІЛ. Мало ресурсів.'},
+  CI:{fr:'Plus grande économie d\'Afrique de l\'Ouest francophone. 1er producteur mondial de cacao. Croissance économique rapide. Ancienne instabilité politique post-guerre civile.',en:'Largest economy in francophone West Africa. World\'s #1 cocoa producer. Fast economic growth. Past political instability after civil war.',ua:'Найбільша франкомовна економіка Африки. №1 виробник какао. Швидке зростання.'},
+  BJ:{fr:'Économie agricole pauvre (coton, noix de cajou). Havre de stabilité relative en Afrique de l\'Ouest. Berceau du vaudou africain. Peu de ressources naturelles.',en:'Poor agricultural economy (cotton, cashews). Oasis of relative stability in West Africa. Birthplace of African voodoo. Few natural resources.',ua:'Бідна аграрна (бавовна, кеш\'ю). Відносна стабільність у Західній Африці. Батьківщина вуду.'},
+  SL:{fr:'Parmi les pays les plus pauvres. Dévasté par une longue guerre civile. Grand producteur de diamants (mais \'diamants du sang\'). Reconstruction lente.',en:'Among the world\'s poorest. Devastated by a long civil war. Major diamond producer (but \'blood diamonds\'). Slow reconstruction.',ua:'Серед найбідніших. Розорена громадянською війною. Алмази (\'криваві\'). Повільна відбудова.'},
+  KM:{fr:'Très pauvre archipel. Instabilité politique extrême (plus de 20 coups d\'État ou tentatives depuis l\'indépendance). Forte émigration vers la France.',en:'Very poor archipelago. Extreme political instability (over 20 coups or attempts since independence). High emigration to France.',ua:'Дуже бідний архіпелаг. Понад 20 переворотів. Велика еміграція до Франції.'},
+  MK:{fr:'Candidate à l\'UE, membre de l\'OTAN depuis 2020. Différend long résolu avec la Grèce sur le nom (ex-ARYM). Économie en développement lent.',en:'EU candidate, NATO member since 2020. Long dispute resolved with Greece over the name (formerly FYROM). Slowly developing economy.',ua:'Кандидат ЄС, НАТО з 2020. Тривала суперечка з Грецією про назву. Повільний розвиток.'},
+  TD:{fr:'Parmi les pays les plus pauvres et fragiles. Importante production pétrolière mais bénéfices mal redistribués. Conflits armés récurrents au nord. Très peu développé.',en:'Among the poorest and most fragile countries. Significant oil production but poorly redistributed benefits. Recurring armed conflicts in the north. Very underdeveloped.',ua:'Серед найбідніших. Нафта, але погано розподілена. Збройні конфлікти на півночі.'},
+  GM:{fr:'L\'une des économies les plus petites d\'Afrique. Forte dépendance au tourisme et aux transferts de la diaspora. Exportateur d\'arachides. Ancienne dictature.',en:'One of Africa\'s smallest economies. High dependence on tourism and diaspora remittances. Groundnut exporter. Former dictatorship.',ua:'Одна з найменших економік Африки. Туризм та перекази. Арахіс. Колишня диктатура.'},
+  TO:{fr:'Seul royaume polynésien. Économie basée sur l\'agriculture, la pêche et les transferts de la diaspora. Très vulnérable aux cyclones et montée des eaux.',en:'The only Polynesian kingdom. Economy based on agriculture, fishing and diaspora remittances. Highly vulnerable to cyclones and rising sea levels.',ua:'Єдине полінезійське королівство. Сільське господарство та рибальство. Вразливе до підняття рівня моря.'},
+  BH:{fr:'Petit État du Golfe en diversification économique (finance, tourisme, F1). Moins riche en pétrole que ses voisins. Tensions politiques liées à la majorité chiite.',en:'Small Gulf state diversifying economy (finance, tourism, F1). Less oil-rich than its neighbors. Political tensions linked to the Shia majority.',ua:'Диверсифікація (фінанси, туризм, Ф-1). Менше нафти, ніж у сусідів. Шиїтська напруга.'},
+  LA:{fr:'Économie communiste en ouverture progressive. Grand producteur d\'hydroélectricité exportée vers les voisins. Très pauvre mais croissance récente. \'Batterie de l\'Asie du Sud-Est\'.',en:'Communist economy gradually opening. Major hydroelectric producer exporting to neighbors. Very poor but recent growth. \'Battery of Southeast Asia\'.',ua:'Комунізм, що поступово відкривається. ГЕС для сусідів. \'Батарея Південно-Східної Азії\'.'},
+  SC:{fr:'Économie insulaire très développée pour l\'Afrique. Forte dépendance au tourisme et à la pêche au thon. L\'un des revenus par habitant les plus élevés d\'Afrique.',en:'Highly developed island economy for Africa. Strong dependence on tourism and tuna fishing. One of Africa\'s highest per capita incomes.',ua:'Розвинена острівна економіка для Африки. Туризм та тунець. Один з найвищих доходів на душу.'},
+  YE:{fr:'Guerre civile dévastatrice depuis 2015 (intervention de la coalition saoudienne). L\'une des pires crises humanitaires mondiales. Économie quasi effondrée.',en:'Devastating civil war since 2015 (Saudi coalition intervention). One of the world\'s worst humanitarian crises. Near-collapsed economy.',ua:'Громадянська війна з 2015 (саудівська коаліція). Одна з найгірших гуманітарних криз. Економіка в колапсі.'},
+  TL:{fr:'L\'un des pays les plus jeunes du monde (indépendance 2002). Économie très dépendante du pétrole et du gaz (Mer de Timor) en déclin. Parmi les plus pauvres d\'Asie.',en:'One of the world\'s youngest countries (independence 2002). Economy highly dependent on oil and gas (Timor Sea) now declining. Among Asia\'s poorest.',ua:'Серед наймолодших (незалежність 2002). Нафта та газ у спаді. Серед найбідніших Азії.'},
+  BB:{fr:'L\'une des économies les plus développées des Caraïbes. Tourisme, services financiers. Devenue république en 2021 (ex-monarchie britannique). Faible corruption.',en:'One of the most developed Caribbean economies. Tourism, financial services. Became a republic in 2021 (formerly British monarchy). Low corruption.',ua:'Одна з найрозвиненіших у Карибах. Туризм та фінанси. Стала республікою у 2021 р.'},
+  BS:{fr:'Économie très développée pour les Caraïbes. Fort hub touristique (croisières, casinos). Centre financier offshore. Très forte inégalité.',en:'Highly developed economy for the Caribbean. Strong tourism hub (cruises, casinos). Offshore financial center. Very high inequality.',ua:'Розвинена для Карибів. Туризм (круїзи, казино). Офшорний центр. Висока нерівність.'},
+  BN:{fr:'Sultanat très riche grâce au pétrole et au gaz. L\'un des plus hauts revenus per capita en Asie. Pas de taxes personnelles. Économie très dépendante des hydrocarbures.',en:'Very wealthy sultanate thanks to oil and gas. One of Asia\'s highest per capita incomes. No personal taxes. Economy highly dependent on hydrocarbons.',ua:'Дуже багатий нафтою та газом. Один з найвищих доходів в Азії. Відсутність прибуткового податку.'},
+  ST:{fr:'Petit archipel très dépendant de l\'aide étrangère et du cacao. Économie de subsistance. Démocratie stable pour la région. Découvertes pétrolières offshore.',en:'Small archipelago highly dependent on foreign aid and cocoa. Subsistence economy. Stable democracy for the region. Offshore oil discoveries.',ua:'Залежить від допомоги та какао. Стабільна демократія. Офшорна нафта.'},
+  JO:{fr:'Économie dépendante de l\'aide étrangère et du tourisme (Pétra). Peu de ressources naturelles. Hub régional de réfugiés (Syriens, Palestiniens). Stabilité relative.',en:'Economy dependent on foreign aid and tourism (Petra). Few natural resources. Regional refugee hub (Syrians, Palestinians). Relative stability.',ua:'Залежить від іноземної допомоги та туризму (Петра). Мало ресурсів. Хаб для біженців.'},
+  SR:{fr:'Économie basée sur la bauxite, l\'or et le pétrole. Transformée par de nouvelles découvertes pétrolières offshore. Petite économie avec forte instabilité historique.',en:'Economy based on bauxite, gold and oil. Transformed by new offshore oil discoveries. Small economy with historically high instability.',ua:'Боксит, золото, нафта. Нові офшорні відкриття. Мала нестабільна економіка.'},
+  CV:{fr:'Économie insulaire stable et bien gouvernée. Forte dépendance au tourisme et aux transferts de la diaspora. Peu de ressources naturelles. Modèle de gouvernance africaine.',en:'Stable, well-governed island economy. Strong dependence on tourism and diaspora remittances. Few natural resources. African governance model.',ua:'Стабільна острівна економіка. Туризм та перекази. Мало ресурсів. Еталон управління в Африці.'},
+  CF:{fr:'Parmi les pays les plus pauvres et fragiles du monde. Immenses ressources naturelles inexploitées (diamants, or, uranium). Conflits armés permanents. Présence militaire russe (Wagner).',en:'Among the world\'s poorest and most fragile. Vast unexploited natural resources (diamonds, gold, uranium). Permanent armed conflicts. Russian military presence (Wagner).',ua:'Серед найбідніших. Алмази, золото, уран. Постійні конфлікти. Присутність Вагнера.'},
+  FJ:{fr:'Économie basée sur le tourisme, la canne à sucre et les exportations d\'eau. Hub régional du Pacifique. Deux coups d\'état majeurs (1987 et 2000). Fragilité climatique.',en:'Economy based on tourism, sugarcane and water exports. Regional Pacific hub. Two major coups (1987 and 2000). Climate vulnerability.',ua:'Туризм, цукровий очерет, вода. Регіональний хаб. Два перевороти. Кліматична вразливість.'},
+  DJ:{fr:'Port stratégique de la mer Rouge et du golfe d\'Aden. Présences militaires étrangères multiples (France, USA, Chine). Économie basée sur les services portuaires. Très peu de ressources propres.',en:'Strategic port on the Red Sea and Gulf of Aden. Multiple foreign military bases (France, USA, China). Economy based on port services. Very few own resources.',ua:'Стратегічний порт. Іноземні бази (Франція, США, Китай). Портові послуги. Мало ресурсів.'},
+  SO:{fr:'État longtemps déliquescent. Piraterie maritime. Territoire en partie contrôlé par les milices Al-Shabaab. Croissance lente grâce aux transferts de la diaspora.',en:'Long-failed state. Maritime piracy. Territory partly controlled by Al-Shabaab militias. Slow growth thanks to diaspora remittances.',ua:'\'Провалена держава\'. Піратство. Аль-Шабааб. Перекази діаспори.'},
+  SS:{fr:'Le plus jeune pays du monde (2011). Conflit civil depuis 2013. Économie quasi entièrement dépendante du pétrole. L\'une des pires crises humanitaires mondiales.',en:'The world\'s youngest country (2011). Civil conflict since 2013. Economy almost entirely dependent on oil. One of the world\'s worst humanitarian crises.',ua:'Наймолодша (2011). Конфлікт з 2013. Залежність від нафти. Одна з найгірших гуманітарних криз.'},
+  GW:{fr:'Parmi les plus pauvres du monde. Économie basée sur la noix de cajou (90% des exports). Instabilité politique extrême (nombreux coups d\'état). Plaque tournante du trafic de drogue.',en:'Among the world\'s poorest. Economy based on cashews (90% of exports). Extreme political instability (many coups). Major drug trafficking hub.',ua:'Серед найбідніших. Кеш\'ю (90% експорту). Нестабільність. Транзит наркотиків.'},
+  GA:{fr:'Pays pétrolier d\'Afrique centrale avec un revenu per capita relativement élevé. Mais forte inégalité. Coup d\'État en 2023. Forêts tropicales immenses.',en:'Central African oil country with relatively high per capita income. But high inequality. Coup in 2023. Vast tropical forests.',ua:'Нафтова країна з відносно високим доходом. Нерівність. Переворот 2023. Тропічні ліси.'},
+  GQ:{fr:'Grand producteur de pétrole per capita mais richesse très inégalement distribuée. Régime autoritaire corrompu. L\'une des plus grandes inégalités mondiales.',en:'Major oil producer per capita but wealth very unequally distributed. Corrupt authoritarian regime. One of the world\'s highest inequalities.',ua:'Великий виробник нафти, але вкрай нерівний розподіл. Корумпований режим.'},
+  CG:{fr:'Production pétrolière offshore significative. Forte dette publique. Forêts tropicales étendues. Régime autoritaire de longue date.',en:'Significant offshore oil production. High public debt. Extensive tropical forests. Long-standing authoritarian regime.',ua:'Офшорна нафта. Великий борг. Тропічні ліси. Довгостроковий авторитаризм.'},
+  LR:{fr:'Parmi les plus pauvres. Reconstruction post-guerre civile longue et difficile. Caoutchouc et minerai de fer. Anciennement fondé par des esclaves libérés américains.',en:'Among the poorest. Long and difficult post-civil war reconstruction. Rubber and iron ore. Originally founded by freed American slaves.',ua:'Серед найбідніших. Відбудова після громадянської війни. Каучук та залізна руда. Заснована звільненими рабами.'},
+  LC:{fr:'Économie caribéenne basée sur le tourisme et les bananes. Hub de services financiers offshore. Relativement stable politiquement.',en:'Caribbean economy based on tourism and bananas. Offshore financial services hub. Relatively stable politically.',ua:'Туризм та банани. Офшорні фінанси. Відносно стабільна.'},
+  GN:{fr:'Immenses ressources minières (bauxite, or, fer, diamants) mais reste très pauvre. Coup d\'État en 2021. Potentiel hydroélectrique énorme.',en:'Immense mining resources (bauxite, gold, iron, diamonds) but remains very poor. Coup in 2021. Enormous hydroelectric potential.',ua:'Боксит, золото, залізо, алмази — але дуже бідна. Переворот 2021. Гідроенергетика.'},
+  NI:{fr:'Parmi les plus pauvres d\'Amérique centrale. Régime de plus en plus autoritaire (Ortega). Grave fuite des cerveaux et émigration. Récentes découvertes d\'or.',en:'Among the poorest in Central America. Increasingly authoritarian regime (Ortega). Serious brain drain and emigration. Recent gold discoveries.',ua:'Серед найбідніших Центральної Америки. Авторитарний режим. Відтік мізків. Золото.'},
+  BZ:{fr:'Petite économie basée sur le tourisme, la canne à sucre et les agrumes. Hub de transit de drogues. Faible densité de population. Récentes découvertes pétrolières.',en:'Small economy based on tourism, sugarcane and citrus. Drug transit hub. Low population density. Recent oil discoveries.',ua:'Туризм, цукор, цитрусові. Транзит наркотиків. Мала густота. Нафта.'},
+  SD:{fr:'Économie en crise depuis la sécession du Soudan du Sud (2011). Grandes réserves pétrolières restantes. Sous sanctions américaines longtemps. Instabilité politique.',en:'Economy in crisis since South Sudan\'s secession (2011). Remaining large oil reserves. Long under US sanctions. Political instability.',ua:'Криза після відокремлення Судану (2011). Нафтові запаси. Санкції. Нестабільність.'},
+  HN:{fr:'Parmi les plus pauvres d\'Amérique centrale. Forte violence des gangs (ex-pays le plus meurtrier du monde). Exportateur de café et bananes. Émigration massive vers les USA.',en:'Among the poorest in Central America. High gang violence (once world\'s most murderous country). Coffee and banana exporter. Mass migration to the USA.',ua:'Серед найбідніших. Банди (колись найбільш смертоносна). Кава та банани. Еміграція до США.'},
+  MR:{fr:'Grande économie minière (fer, or, cuivre). Très vaste territoire quasi-désertique. Pratique de l\'esclavage encore présente. Frontière entre monde arabe et Afrique noire.',en:'Large mining economy (iron, gold, copper). Vast near-desert territory. Slavery still practiced. Border between the Arab world and Black Africa.',ua:'Залізо, золото, мідь. Пустельна. Рабство ще практикується. Межа арабського та африканського світів.'},
+  TJ:{fr:'Pays le plus pauvre d\'Asie centrale. Économie basée sur les transferts de la diaspora (Russie). Hydroélectricité majeure. Régime très autoritaire.',en:'Poorest country in Central Asia. Economy based on diaspora remittances (Russia). Major hydroelectricity. Very authoritarian regime.',ua:'Найбідніша Центральна Азія. Перекази з Росії. ГЕС. Дуже авторитарний режим.'},
+  PG:{fr:'Immenses ressources naturelles (or, cuivre, gaz, forêts) mais très peu développé. Grande biodiversité. Nombreuses langues (800+). LNG important.',en:'Immense natural resources (gold, copper, gas, forests) but very underdeveloped. Great biodiversity. Many languages (800+). Important LNG.',ua:'Золото, мідь, газ, ліси — але дуже нерозвинена. Біорізноманіття. 800+ мов. ЗПГ.'},
+  VC:{fr:'Économie caribéenne basée sur la banane et le tourisme. Très vulnérable aux cyclones. Éruption volcanique majeure en 2021 (La Soufrière).',en:'Caribbean economy based on bananas and tourism. Highly vulnerable to hurricanes. Major volcanic eruption in 2021 (La Soufrière).',ua:'Банани та туризм. Вразлива до ураганів. Виверження вулкану 2021 (Ла-Суфрієр).'},
+  BT:{fr:'Petit royaume bouddhiste très fermé. Mesure le \'Bonheur national brut\'. Économie basée sur l\'hydroélectricité exportée vers l\'Inde. Très faible développement.',en:'Small, very closed Buddhist kingdom. Measures \'Gross National Happiness\'. Economy based on hydroelectricity exported to India. Very limited development.',ua:'Закрите королівство. Вимірює \'Валовий національний щастя\'. ГЕС для Індії.'},
+  AG:{fr:'Double île caribéenne. Économie basée sur le tourisme (plages de classe mondiale). Hub d\'yachting de luxe. Revenus per capita relativement élevés pour les Caraïbes.',en:'Twin-island Caribbean nation. Economy based on tourism (world-class beaches). Luxury yachting hub. Relatively high per capita income for the Caribbean.',ua:'Туризм (пляжі). Яхтинг. Відносно високий дохід для Карибів.'},
+  SB:{fr:'Économie basée sur l\'exploitation forestière (menace environnementale) et la pêche. Conflit entre Taiwan et Chine pour l\'influence. Très peu développé.',en:'Economy based on logging (environmental threat) and fishing. Competition between Taiwan and China for influence. Very underdeveloped.',ua:'Лісозаготівля та рибальство. Змагання Тайваню та Китаю за вплив. Нерозвинений.'},
+  KI:{fr:'État en première ligne du changement climatique (montée des eaux). Économie basée sur la pêche et les licences de pêche étrangères. Très isolé.',en:'State on the front line of climate change (rising sea levels). Economy based on fishing and foreign fishing licenses. Very isolated.',ua:'Під загрозою підйому рівня моря. Рибальство. Дуже ізольований.'},
+  WS:{fr:'Économie basée sur l\'agriculture, la pêche et les transferts de la diaspora (Nouvelle-Zélande, Australie). Très vulnérable aux cyclones et tsunamis.',en:'Economy based on agriculture, fishing and diaspora remittances (NZ, Australia). Highly vulnerable to cyclones and tsunamis.',ua:'Сільське господарство та перекази (Нова Зеландія, Австралія). Вразлива до циклонів.'},
+  MV:{fr:'Économie quasi entièrement basée sur le tourisme de luxe. En première ligne de la montée des eaux (altitude maximale ~2m). Forte croissance récente.',en:'Economy almost entirely based on luxury tourism. On the front line of rising sea levels (max altitude ~2m). Strong recent growth.',ua:'Практично лише туризм класу люкс. Під загрозою підйому моря (макс. ~2 м). Швидке зростання.'},
+  PS:{fr:'Territoire sous occupation et siège partiel. Économie très dépendante de l\'aide internationale. Gaza sous blocus depuis 2007. Forte dépendance à Israël.',en:'Territory under partial occupation and siege. Economy highly dependent on international aid. Gaza under blockade since 2007. High dependence on Israel.',ua:'Окупована / облогова територія. Залежність від допомоги. Блокада Гази з 2007.'},
+  GD:{fr:'Petite économie caribéenne. Tourisme, épices (noix de muscade). Connue pour l\'invasion américaine de 1983. Revenus relativement stables.',en:'Small Caribbean economy. Tourism, spices (nutmeg). Known for 1983 US invasion. Relatively stable income.',ua:'Туризм, прянощі (мускатний горіх). Американське вторгнення 1983 р.'},
+  KN:{fr:'Deux petites îles caribéennes. Économie basée sur le tourisme et les services financiers offshore. L\'un des plus faibles PIB des Amériques.',en:'Two small Caribbean islands. Economy based on tourism and offshore financial services. One of the Americas\' smallest GDPs.',ua:'Туризм та офшорні фінанси. Один з найменших ВВП Америки.'},
+  TW:{fr:'Économie très développée (\'Tigre asiatique\'). Leader mondial des semi-conducteurs (TSMC). Hub technologique mondial. Statut politique contesté par la Chine.',en:'Highly developed economy (\'Asian Tiger\'). World semiconductor leader (TSMC). Global tech hub. Political status contested by China.',ua:'\'Азійський тигр\'. Лідер напівпровідників (TSMC). Статус оскаржується Китаєм.'},
+  DM:{fr:'Petite île caribéenne volcanique. Économie basée sur l\'agriculture (bananes) et l\'éco-tourisme. L\'une des moins développées des Caraïbes. Connue comme \'l\'île nature\'.',en:'Small volcanic Caribbean island. Economy based on agriculture (bananas) and eco-tourism. One of the Caribbean\'s least developed. Known as the \'nature island\'.',ua:'Бананів та екотуризм. Одна з найменш розвинених. \'Острів природи\'.'},
+  TV:{fr:'L\'un des plus petits pays du monde. Revenu issu de la vente du domaine .tv à des chaînes de télévision. En danger d\'inondation (montée des eaux). Très isolé.',en:'One of the world\'s smallest countries. Income from selling the .tv domain to TV channels. Flooding risk (rising sea levels). Very isolated.',ua:'Одна з найменших. Дохід від домену .tv. Загроза затоплення. Ізольована.'},
+  PW:{fr:'Économie basée sur le tourisme plongée sous-marine et l\'aide américaine (Compact of Free Association). Très peu développé économiquement.',en:'Economy based on scuba diving tourism and US aid (Compact of Free Association). Very economically underdeveloped.',ua:'Дайвінг та американська допомога (Компакт). Нерозвинений.'},
+  FM:{fr:'Économie dépendante de l\'aide américaine (Compact of Free Association). Pêche et subsistance. Très peu développé. Vulnérable au changement climatique.',en:'Economy dependent on US aid (Compact of Free Association). Fishing and subsistence. Very underdeveloped. Vulnerable to climate change.',ua:'Американська допомога. Рибальство. Нерозвинений. Кліматична вразливість.'},
+  SM:{fr:'République enclée dans l\'Italie. Un des pays les plus riches per capita. Économie basée sur le tourisme, la finance et la vente de franchises postales.',en:'Republic enclosed within Italy. One of the richest per capita countries. Economy based on tourism, finance and postal franchise sales.',ua:'Анклав в Італії. Один з найбагатших. Туризм та фінанси.'},
+  NR:{fr:'Île dont l\'économie fut basée sur le phosphate (épuisé). Aujourd\'hui dépendante de l\'aide étrangère. Obésité massive. Considérée paradis fiscal.',en:'Island whose economy was based on phosphate (now depleted). Now dependent on foreign aid. Massive obesity. Considered a tax haven.',ua:'Фосфат вичерпано. Залежність від допомоги. Масове ожиріння. Офшор.'},
+  MH:{fr:'Site d\'essais nucléaires américains (Bikini). Économie dépendante de l\'aide américaine. Très vulnérable à la montée des eaux. Population dispersée.',en:'Site of American nuclear tests (Bikini). Economy dependent on US aid. Very vulnerable to rising sea levels. Dispersed population.',ua:'Ядерні випробування (Бікіні). Американська допомога. Дуже вразливий до підйому рівня моря.'},
+  MC:{fr:'2e plus petit pays du monde. Paradis fiscal et financier. Densité de population la plus élevée du monde. Hub de luxe, casino et yachting. Famille Grimaldi.',en:'World\'s 2nd smallest country. Tax and financial haven. World\'s highest population density. Luxury, casino and yachting hub. Grimaldi family.',ua:'2-га найменша країна. Офшор та фінанси. Найвища густота населення. Казино. Грімальді.'},
+  AD:{fr:'Microfiscalité : pas d\'impôt sur le revenu. Hub de shopping et tourisme de ski. Économie très dépendante du commerce transfrontalier avec la France et l\'Espagne.',en:'Micro-taxation: no income tax. Shopping and ski tourism hub. Economy highly dependent on cross-border trade with France and Spain.',ua:'Без прибуткового податку. Шопінг та лижний туризм. Залежить від Франції та Іспанії.'},
+  XK:{fr:'Un des plus jeunes pays du monde (indépendance 2008). Économie en développement, aide internationale majeure. Reconnaissance internationale partielle. Candidat UE.',en:'One of the world\'s youngest countries (independence 2008). Developing economy, major international aid. Partial international recognition. EU candidate.',ua:'Незалежність 2008. Часткове визнання. Міжнародна допомога. Кандидат ЄС.'},
+  MO:{fr:'Région administrative spéciale de la Chine. PIB per capita parmi les plus élevés du monde (jeux de casino). Las Vegas de l\'Asie. Monopoly du jeu.',en:'China\'s special administrative region. GDP per capita among the world\'s highest (casino gambling). Las Vegas of Asia. Gambling monopoly.',ua:'Особлива адміністративна зона. Один з найвищих ВВП на душу (казино). Лас-Вегас Азії.'},
+  PR:{fr:'Territoire américain non incorporé. Économie basée sur la pharmacie, la finance et le tourisme. Forte dette et crise économique depuis 2006. Entre deux statuts.',en:'Unincorporated US territory. Economy based on pharmaceuticals, finance and tourism. Heavy debt and economic crisis since 2006. Between two statuses.',ua:'Неінкорпорована територія США. Фармацевтика та туризм. Великий борг і криза.'},
+  HK:{fr:'Ancienne colonie britannique, maintenant région administrative spéciale de la Chine. L\'un des plus grands centres financiers mondiaux. Autonomie fortement réduite depuis 2020.',en:'Former British colony, now China\'s special administrative region. One of the world\'s largest financial centers. Autonomy greatly reduced since 2020.',ua:'Колишня британська колонія, тепер ОАР. Фінансовий центр. Автономія скорочена з 2020.'},
+  NC:{fr:'Territoire français d\'Outre-mer. Immenses réserves de nickel (25-30% mondial). Économie dépendante du nickel et de la France. Mouvement indépendantiste kanak.',en:'French Overseas Territory. Vast nickel reserves (25-30% of global). Economy dependent on nickel and France. Kanak independence movement.',ua:'Французька заморська. Величезні запаси нікелю. Рух за незалежність канаків.'},
+  PF:{fr:'Collectivité française d\'Outre-mer (Tahiti). Fort autonomie. Économie basée sur le tourisme de luxe et les perles de Tahiti. Fortement dépendant de la France.',en:'French Overseas Collectivity (Tahiti). High autonomy. Economy based on luxury tourism and Tahitian pearls. Highly dependent on France.',ua:'Французька (Таїті). Туризм класу люкс та перли. Залежить від Франції.'},
+  GL:{fr:'Territoire autonome du Danemark. Économie basée sur la pêche et les subventions danoises. Immenses ressources minières encore peu exploitées. Intérêt géopolitique croissant.',en:'Autonomous Danish territory. Economy based on fishing and Danish subsidies. Vast mineral resources still largely unexploited. Growing geopolitical interest.',ua:'Автономна данська територія. Рибальство та субсидії. Ресурси невикористані. Зростаючий геополітичний інтерес.'},
+  FO:{fr:'Territoire autonome du Danemark. Économie très prospère basée sur la pêche industrielle. Fort sentiment d\'indépendance. Haute qualité de vie.',en:'Autonomous Danish territory. Very prosperous economy based on industrial fishing. Strong independence sentiment. High quality of life.',ua:'Автономна данська. Процвітаюча рибальська економіка. Незалежницький настрій. Якість життя.'},
+  LI:{fr:'Deuxième plus petit pays germanophone. Paradis fiscal (siège de nombreux holdings). L\'un des plus hauts revenus per capita du monde. Dans l\'espace Schengen.',en:'Second smallest German-speaking country. Tax haven (HQ of many holdings). One of the world\'s highest per capita incomes. In the Schengen area.',ua:'Офшор (холдинги). Один з найвищих доходів. Шенгенська зона.'},
+  AW:{fr:'Île caribéenne autonome des Pays-Bas. Économie basée sur le tourisme et le raffinage du pétrole (ex). Revenus per capita relativement élevés pour les Caraïbes.',en:'Autonomous Dutch Caribbean island. Economy based on tourism and (formerly) oil refining. Relatively high per capita income for the Caribbean.',ua:'Автономний нідерландський острів. Туризм. Відносно високий дохід.'},
+  ER:{fr:'L\'un des régimes les plus fermés du monde (\'la Corée du Nord de l\'Afrique\'). Service militaire obligatoire indéfini. Économie quasi inexistante et isolée.',en:'One of the world\'s most closed regimes (\'the North Korea of Africa\'). Indefinite mandatory military service. Almost non-existent and isolated economy.',ua:'\'Північна Корея Африки\'. Безстрокова військова служба. Ізольована та нерозвинена.'},
+  MM:{fr:'Riches ressources naturelles (jade, rubis, gaz, bois). Régime militaire depuis le coup d\'État de 2021. Économie en crise et sanctions internationales. Guerre civile.',en:'Rich natural resources (jade, rubies, gas, timber). Military regime since 2021 coup. Economy in crisis and under international sanctions. Civil war.',ua:'Нефрит, рубіни, газ. Переворот 2021. Санкції. Громадянська війна.'},
+  RW:{fr:'Économie en forte croissance depuis le génocide de 1994. Modèle de gouvernance africaine (faible corruption). Hub technologique. Kagame au pouvoir.',en:'Fast-growing economy since the 1994 genocide. African governance model (low corruption). Tech hub. Kagame in power.',ua:'Швидке зростання після геноциду 1994. Модель управління. Технохаб. Кагаме.'},
+  TG:{fr:'Économie basée sur le phosphate, l\'agriculture et les ports (hub régional). Régime politique stable mais peu démocratique. L\'une des plus faibles dépenses sociales.',en:'Economy based on phosphate, agriculture and ports (regional hub). Stable but undemocratic political regime. Among the lowest social spending.',ua:'Фосфат, сільське господарство та порти. Стабільний, але недемократичний режим.'},
+  UG:{fr:'Économie à forte croissance, agricole. Récentes découvertes de pétrole. Siège de certaines institutions africaines. Régime Museveni depuis 1986.',en:'Fast-growing, agricultural economy. Recent oil discoveries. Home to some African institutions. Museveni regime since 1986.',ua:'Швидке аграрне зростання. Нафтові відкриття. Режим Мусевені з 1986 р.'},
+  MZ:{fr:'Découvertes majeures de gaz naturel offshore (Rovuma). L\'un des plus pauvres. Reconstruction post-guerre civile. LNG en développement.',en:'Major offshore gas discoveries (Rovuma). One of the world\'s poorest. Post-civil war reconstruction. LNG under development.',ua:'Газ (Ровума). Один з найбідніших. Відбудова. ЗПГ у розвитку.'},
+  NP:{fr:'Économie très pauvre et enclavée. Transferts de travailleurs (Golfe, Inde). Hydroélectricité immense non exploitée. Everest et tourisme de montagne.',en:'Very poor and landlocked economy. Worker remittances (Gulf, India). Vast unexploited hydroelectric potential. Everest and mountain tourism.',ua:'Бідна без виходу до моря. Перекази (Затока, Індія). ГЕС. Еверест і туризм.'},
+  BF:{fr:'Parmi les plus pauvres. Grave insécurité terroriste sahélienne depuis 2015. Exportateur d\'or. Coup d\'état en 2022. Présence russe (Wagner).',en:'Among the poorest. Severe Sahelian terrorist insecurity since 2015. Gold exporter. Coup in 2022. Russian presence (Wagner).',ua:'Серед найбідніших. Терористи Сахелю. Золото. Переворот 2022. Вагнер.'},
+  ML:{fr:'Vaste pays sahélien très pauvre. Instabilité depuis 2012 (jihadistes au nord). Coups d\'état en 2020 et 2021. Présence russe (Wagner). Producteur d\'or.',en:'Vast, very poor Sahelian country. Instability since 2012 (jihadists in the north). Coups in 2020 and 2021. Russian presence (Wagner). Gold producer.',ua:'Величезна бідна Сахельська. Нестабільність з 2012. Перевороти. Вагнер. Золото.'},
+  NE:{fr:'L\'un des plus pauvres et plus fragiles. 4e producteur mondial d\'uranium. Coup d\'état en 2023. Très forte croissance démographique.',en:'Among the poorest and most fragile. World\'s 4th largest uranium producer. Coup in 2023. Very fast population growth.',ua:'Серед найбідніших. Уран (4-те місце). Переворот 2023. Дуже швидке зростання населення.'},
+
+};
+
+function getCountryDesc2(c) {
+  var code = (c.country_code || '').toUpperCase();
+  if (code && COUNTRY_HINTS2[code]) {
+    var d = COUNTRY_HINTS2[code];
+    return d[currentLang] || d.fr;
+  }
+  var nameFR = (c.country_FR || '').toLowerCase();
+  var nameLookup = {
+    'france':'FR','états-unis':'US','etats-unis':'US','brésil':'BR','bresil':'BR',
+    'japon':'JP','inde':'IN','norvège':'NO','norvege':'NO','nigeria':'NG',
+    'argentine':'AR','australie':'AU','chine':'CN','allemagne':'DE','russie':'RU',
+    'royaume-uni':'GB','espagne':'ES','italie':'IT','canada':'CA','mexique':'MX',
+    'colombie':'CO','viêt nam':'VN','viet nam':'VN','vietnam':'VN',
+    'turquie':'TR','ukraine':'UA','pologne':'PL','pays-bas':'NL'
+  };
+  var mapped = nameLookup[nameFR];
+  if (mapped && COUNTRY_HINTS2[mapped]) {
+    var d2 = COUNTRY_HINTS2[mapped];
+    return d2[currentLang] || d2.fr;
+  }
+  return null;
+}
+
 
 // ─── COUNTRY TOOLTIP ──────────────────────────────────────────────────────────
-var countryTooltipVisible = false;
+// Hint state for current turn
+var hintState = { hint1Revealed: false, hint2Revealed: false };
 
-function toggleCountryTooltip(e) {
-  e.stopPropagation();
-  var tip = document.getElementById('country-tooltip');
-  if (countryTooltipVisible) {
-    hideCountryTooltip();
-    return;
-  }
-  var btn = document.getElementById('country-info-btn');
-  tip.textContent = btn.dataset.desc || '';
-  var tipWidth = 260;
+function spawnRipple(btn, e) {
+  var r = document.createElement('span');
+  r.className = 'ripple-el';
   var rect = btn.getBoundingClientRect();
-  var left = Math.max(8, Math.min(rect.left + rect.width/2 - tipWidth/2, window.innerWidth - tipWidth - 8));
-  tip.style.width = tipWidth + 'px';
-  tip.style.left  = left + 'px';
-  tip.style.visibility = 'hidden';
-  tip.classList.add('visible');
-  var tipH = tip.offsetHeight;
-  tip.classList.remove('visible');
-  tip.style.visibility = '';
-  tip.style.top = (rect.top - 8 - tipH < 8) ? (rect.bottom + 8) + 'px' : (rect.top - 8 - tipH) + 'px';
-  tip.classList.add('visible');
-  countryTooltipVisible = true;
+  r.style.top  = (e.clientY - rect.top)  + 'px';
+  r.style.left = (e.clientX - rect.left) + 'px';
+  btn.appendChild(r);
+  setTimeout(function() { r.remove(); }, 600);
 }
 
-function hideCountryTooltip() {
-  document.getElementById('country-tooltip').classList.remove('visible');
-  countryTooltipVisible = false;
-}
-
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('#country-info-btn') && !e.target.closest('#country-tooltip')) {
-    hideCountryTooltip();
+function spawnParticles(btn, color) {
+  var rect = btn.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top  + rect.height / 2;
+  var container = document.createElement('div');
+  container.className = 'hint-particles';
+  document.body.appendChild(container);
+  var colors = color === 'green'
+    ? ['#4fffb0','#a0ffda','#00e87a','#fff']
+    : ['#ffb34f','#ffd08a','#ff8c00','#fff'];
+  for (var i = 0; i < 14; i++) {
+    var p = document.createElement('div');
+    p.className = 'hint-particle';
+    var angle = (i / 14) * Math.PI * 2;
+    var dist  = 40 + Math.random() * 55;
+    var tx = Math.cos(angle) * dist;
+    var ty = Math.sin(angle) * dist;
+    var dur = (0.45 + Math.random() * 0.3) + 's';
+    p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;background:' + colors[i % colors.length] + ';--tx:' + tx + 'px;--ty:' + ty + 'px;--dur:' + dur + ';animation-delay:' + (Math.random() * 0.05) + 's';
+    container.appendChild(p);
   }
-});
+  setTimeout(function() { container.remove(); }, 900);
+}
+
+function flashScore() {
+  var el = document.getElementById('total-score');
+  el.classList.remove('score-flash');
+  void el.offsetWidth; // reflow
+  el.classList.add('score-flash');
+  setTimeout(function() { el.classList.remove('score-flash'); }, 500);
+}
+
+function revealHint1(e) {
+  if (hintState.hint1Revealed || isRevealing || gameMode === 'hardcore') return;
+  hintState.hint1Revealed = true;
+  totalScore += 25;
+  document.getElementById('total-score').textContent = totalScore;
+  flashScore();
+  // Log hint penalty for end-screen recap
+  var _c1 = gameCountries[currentStep];
+  gameLog.push({
+    flag: _c1.flag || _c1.emoji || '🌍',
+    name: getCountryName(_c1),
+    catObj: null,
+    points: 25,
+    isPenalty: true,
+    isHint: true,
+    hintLevel: 1
+  });
+
+  var btn1 = document.getElementById('hint-btn-1');
+  if (e) { spawnRipple(btn1, e); spawnParticles(btn1, 'green'); }
+
+  var c = gameCountries[currentStep];
+  var desc = getCountryDesc(c);
+
+  // Set label text directly (no data-i18n)
+  document.getElementById('hint-label-1').innerHTML = t('hintLabel1') + ' <span class="cost-badge cost-badge-1">-25 pts</span>';
+  document.getElementById('hint-text-1').textContent = desc || '—';
+
+  // Trigger panel open with animation
+  var panel = document.getElementById('hint-panel');
+  panel.classList.remove('open');
+  void panel.offsetWidth;
+  panel.classList.add('open');
+
+  btn1.classList.add('revealed');
+  btn1.innerHTML = '💡 ✓';
+
+  // Show hint2 if desc2 exists
+  var desc2 = getCountryDesc2(c);
+  if (desc2) {
+    var btn2 = document.getElementById('hint-btn-2');
+    btn2.style.display = 'inline-flex';
+    // small bounce-in delay
+    btn2.style.animation = 'none';
+    setTimeout(function() {
+      btn2.style.animation = 'hintBoom 0.32s cubic-bezier(0.34,1.56,0.64,1) both';
+    }, 120);
+  }
+}
+
+function revealHint2(e) {
+  if (hintState.hint2Revealed || isRevealing || gameMode === 'hardcore') return;
+  hintState.hint2Revealed = true;
+  totalScore += 50;
+  document.getElementById('total-score').textContent = totalScore;
+  flashScore();
+  // Log hint penalty for end-screen recap
+  var _c2 = gameCountries[currentStep];
+  gameLog.push({
+    flag: _c2.flag || _c2.emoji || '🌍',
+    name: getCountryName(_c2),
+    catObj: null,
+    points: 50,
+    isPenalty: true,
+    isHint: true,
+    hintLevel: 2
+  });
+
+  var btn2 = document.getElementById('hint-btn-2');
+  if (e) { spawnRipple(btn2, e); spawnParticles(btn2, 'orange'); }
+
+  var c = gameCountries[currentStep];
+  var desc2 = getCountryDesc2(c);
+
+  document.getElementById('hint-label-2').innerHTML = t('hintLabel2') + ' <span class="cost-badge cost-badge-2">-50 pts</span>';
+  document.getElementById('hint-text-2').textContent = desc2 || '—';
+
+  var block2 = document.getElementById('hint-block-2');
+  block2.style.display = 'block';
+  block2.style.animation = 'none';
+  void block2.offsetWidth;
+  block2.style.animation = 'hintSlideIn 0.3s ease both';
+
+  btn2.classList.add('revealed');
+  btn2.innerHTML = '🔍 ✓';
+}
+
+function resetHints() {
+  hintState = { hint1Revealed: false, hint2Revealed: false };
+  var panel = document.getElementById('hint-panel');
+  panel.classList.remove('open');
+  document.getElementById('hint-block-2').style.display = 'none';
+  document.getElementById('hint-text-1').textContent = '';
+  document.getElementById('hint-text-2').textContent = '';
+  document.getElementById('hint-label-1').textContent = '';
+  document.getElementById('hint-label-2').textContent = '';
+
+  var btn1 = document.getElementById('hint-btn-1');
+  btn1.classList.remove('revealed');
+  btn1.style.animation = '';
+  btn1.innerHTML = '💡 ' + t('hint1btn');
+  btn1.style.display = 'inline-flex';
+
+  var btn2 = document.getElementById('hint-btn-2');
+  btn2.classList.remove('revealed');
+  btn2.style.animation = '';
+  btn2.innerHTML = '🔍 ' + t('hint2btn');
+  btn2.style.display = 'none';
+
+  // Check availability for current country
+  if (currentStep < 8 && gameCountries[currentStep]) {
+    if (!getCountryDesc(gameCountries[currentStep])) btn1.style.display = 'none';
+  }
+}
 
 // ─── TWEMOJI HELPER ──────────────────────────────────────────────────────────────
 function applyEmoji(el) {
