@@ -419,37 +419,25 @@ body.hardcore .countdown-num { color:#ff3d5a; text-shadow:0 0 40px rgba(255,61,9
 }
 
 
-/* ── Presets accordion ── */
+/* ── Presets ── */
 .presets-section { margin-top:4px; }
-.presets-toggle {
-  display:flex; align-items:center; justify-content:space-between;
-  width:100%; padding:8px 12px; border-radius:10px; cursor:pointer;
-  border:1px solid var(--border); background:var(--surface2);
-  color:var(--muted); font-family:'DM Mono',monospace; font-size:0.72em;
-  font-weight:700; text-align:left; transition:all 0.15s;
+.presets-label {
+  font-family:'DM Mono',monospace; font-size:0.68em; font-weight:700;
+  color:var(--accent3); text-transform:uppercase; letter-spacing:.08em;
+  margin-bottom:8px;
 }
-.presets-toggle:hover { border-color:var(--accent3); color:var(--accent3); }
-.presets-toggle .pt-arrow { transition:transform 0.2s; font-style:normal; }
-.presets-toggle.open { border-color:var(--accent3); color:var(--accent3); background:rgba(167,139,250,0.06); }
-.presets-toggle.open .pt-arrow { transform:rotate(180deg); }
-.presets-body {
-  display:none; padding-top:8px;
-}
-.presets-body.open { display:block; }
-.presets-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:6px;
-}
+.presets-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .preset-btn {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; padding:8px 4px; border-radius:8px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:flex-start;
+  gap:3px; padding:10px 12px; border-radius:10px; cursor:pointer;
   border:1px solid var(--border); background:var(--surface);
   color:var(--muted); font-family:'DM Mono',monospace;
-  transition:all 0.15s; text-align:center;
+  transition:all 0.18s; text-align:left;
 }
-.preset-btn:hover { border-color:var(--accent3); background:rgba(167,139,250,0.08); }
-.preset-btn.active { border-color:var(--accent); background:rgba(79,255,176,0.07); }
-.preset-btn .p-icon { font-size:1.3em; line-height:1.2; }
-.preset-btn .p-name { font-size:0.58em; font-weight:700; color:var(--text); line-height:1.3; }
+.preset-btn:hover { border-color:var(--accent3); background:rgba(167,139,250,0.08); color:var(--text); }
+.preset-btn .p-icon { font-size:1.5em; line-height:1; }
+.preset-btn .p-name { font-size:0.72em; font-weight:700; color:var(--text); }
+.preset-btn .p-desc { font-size:0.62em; color:var(--muted); line-height:1.4; }
 
 /* ── Country Ribbon Selector ── */
 .ribbon-section { margin-top:4px; }
@@ -1053,63 +1041,30 @@ body.reverse-mode #countries-grid { display:grid; }
         </div>
       </div>
 
-      <!-- Presets accordion -->
+      <!-- Presets -->
       <div class="presets-section">
-        <button class="presets-toggle" id="presets-toggle" onclick="togglePresets()">
-          <span>⚡ Presets</span>
-          <span class="pt-arrow">▾</span>
-        </button>
-        <div class="presets-body" id="presets-body">
-          <div class="presets-grid">
-            <button class="preset-btn" onclick="applyPreset('no-russia',this)">
-              <span class="p-icon">🚫🇷🇺</span>
-              <span class="p-name">No Russia</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('europe',this)">
-              <span class="p-icon">🇪🇺</span>
-              <span class="p-name">European</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('africa',this)">
-              <span class="p-icon">🌍</span>
-              <span class="p-name">African</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('americas',this)">
-              <span class="p-icon">🌎</span>
-              <span class="p-name">Americas</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('asia',this)">
-              <span class="p-icon">🌏</span>
-              <span class="p-name">Asian</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('oceania',this)">
-              <span class="p-icon">🏝️</span>
-              <span class="p-name">Oceania</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('top100pib',this)">
-              <span class="p-icon">💰</span>
-              <span class="p-name">Top 100 PIB</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('sport',this)">
-              <span class="p-icon">🏆</span>
-              <span class="p-name">Sport Enjoyer</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('chill',this)">
-              <span class="p-icon">😌</span>
-              <span class="p-name">Chill</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('ultra',this)">
-              <span class="p-icon">💀🔥</span>
-              <span class="p-name">Ultra Hardcore</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('small',this)">
-              <span class="p-icon">🔬</span>
-              <span class="p-name">− 1M hab.</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('france-neighbors',this)">
-              <span class="p-icon">🇫🇷🤝</span>
-              <span class="p-name">Voisins France</span>
-            </button>
-          </div>
+        <div class="presets-label">⚡ Presets</div>
+        <div class="presets-grid">
+          <button class="preset-btn" onclick="applyPreset('no-russia',this)">
+            <span class="p-icon">🚫🇷🇺</span>
+            <span class="p-name">No Russia</span>
+            <span class="p-desc">Tous les pays sauf la Russie</span>
+          </button>
+          <button class="preset-btn" onclick="applyPreset('europe',this)">
+            <span class="p-icon">🇪🇺</span>
+            <span class="p-name">European Countries</span>
+            <span class="p-desc">Pays européens uniquement</span>
+          </button>
+          <button class="preset-btn" onclick="applyPreset('sport',this)">
+            <span class="p-icon">🏆</span>
+            <span class="p-name">Sport Enjoyer</span>
+            <span class="p-desc">4 catégories sport forcées</span>
+          </button>
+          <button class="preset-btn" onclick="applyPreset('chill',this)">
+            <span class="p-icon">😌</span>
+            <span class="p-name">Chill</span>
+            <span class="p-desc">8 tours · Infini · Normal · Auto</span>
+          </button>
         </div>
       </div>
 
@@ -1820,111 +1775,44 @@ var EUROPEAN_CODES = [
   'NO','PL','PT','RO','SM','RS','SK','SI','ES','SE',
   'CH','UA','GB','VA','CY','AZ','GE','AM'
 ];
-var AFRICAN_CODES = [
-  'DZ','AO','BJ','BW','BF','BI','CM','CV','CF','TD',
-  'KM','CG','CD','CI','DJ','EG','GQ','ER','SZ','ET',
-  'GA','GM','GH','GN','GW','KE','LS','LR','LY','MG',
-  'MW','ML','MR','MU','MA','MZ','NA','NE','NG','RE',
-  'RW','ST','SN','SL','SO','ZA','SS','SD','TZ','TG',
-  'TN','UG','ZM','ZW','SH'
-];
-var AMERICAS_CODES = [
-  'AG','AR','BS','BB','BZ','BO','BR','CA','CL','CO',
-  'CR','CU','DM','DO','EC','SV','GD','GT','GY','HT',
-  'HN','JM','MX','NI','PA','PY','PE','KN','LC','VC',
-  'SR','TT','US','UY','VE','PR','GP','MQ','GF'
-];
-var ASIAN_CODES = [
-  'AF','AM','AZ','BH','BD','BT','BN','KH','CN','CY',
-  'GE','IN','ID','IR','IQ','IL','JP','JO','KZ','KW',
-  'KG','LA','LB','MY','MV','MN','MM','NP','KP','OM',
-  'PK','PS','PH','QA','SA','SG','KR','LK','SY','TW',
-  'TJ','TH','TL','TM','AE','UZ','VN','YE','HK','MO'
-];
-var OCEANIA_CODES = [
-  'AU','FJ','KI','MH','FM','NR','NZ','PW','PG','WS',
-  'SB','TO','TV','VU','CK','PF','GU','NC','NU','NF',
-  'MP','AS','TK','WF'
-];
-var TOP100_PIB_CODES = [
-  'US','CN','JP','DE','IN','GB','FR','RU','CA','IT',
-  'BR','AU','KR','MX','ES','ID','SA','NL','TR','CH',
-  'TW','PL','AR','NO','SE','BE','IE','IL','AE','TH',
-  'EG','NG','AT','SG','BD','IR','VN','MY','ZA','PH',
-  'DK','PK','HK','CO','CL','RO','CZ','FI','IQ','PT',
-  'NZ','PE','QA','KZ','GR','DZ','HU','KW','UA','MA',
-  'ET','SK','EC','OM','DO','PR','KE','CU','AO','GT',
-  'VE','BG','LU','UZ','AZ','PA','TZ','LK','GH','BY',
-  'HR','UY','LT','CI','CR','CD','RS','MM','SI','TM',
-  'SD','JO','TN','LY','UG','BH','BO','CM','PY','LV'
-];
 var SPORT_CAT_IDS = ['classement_fifa_H','classement_fifa_F','classement_rugby_H','classement_bball_M'];
-// Pays < ~1M habitants (rang nb_habitant >= 162 dans la DB)
-var SMALL_COUNTRIES_CODES = [
-  'FJ','KM','GY','BT','SB','MO','LU','ME','SR','CV',
-  'MT','MV','BN','BS','BZ','IS','VU','PF','NC','BB',
-  'ST','WS','CW','LC','GU','KI','GD','FM','JE','TO',
-  'SC','AW','VC','VI','AG','IM','AD','DM','KY','BM',
-  'GG','GL','FO','MP','KN','TC','SX','AS','MH','LI',
-  'MC','SM','MF','BQ','PW','NR','TV'
-];
-// Pays partageant une frontière avec la France (métropole + DOM)
-var FRANCE_NEIGHBORS_CODES = [
-  'BE','LU','DE','CH','IT','MC','AD','ES', // métropole
-  'GB',                                      // tunnel sous la Manche
-  'BR','SR','SX'                             // Guyane française + Saint-Martin
-];
-
-function togglePresets() {
-  var toggle = document.getElementById('presets-toggle');
-  var body   = document.getElementById('presets-body');
-  toggle.classList.toggle('open');
-  body.classList.toggle('open');
-}
 
 function applyPreset(name, btn) {
   // S'assurer que les ribbons sont initialisés
   if (Object.keys(ribbonState).length === 0)    ribbonInit();
   if (Object.keys(catRibbonState).length === 0) catRibbonInit();
 
-  // Helper : set country ribbon by code whitelist
-  function setCountryByList(allowedCodes) {
+  if (name === 'no-russia') {
+    // Reset ribbon pays : tout en Possible, puis Russie en Exclus
+    for (var i = 0; i < countriesDB.length; i++) ribbonState[i] = 'poss';
     for (var i = 0; i < countriesDB.length; i++) {
-      var code = (countriesDB[i].country_code || '').toUpperCase();
-      ribbonState[i] = (allowedCodes.indexOf(code) !== -1) ? 'poss' : 'excl';
+      if ((countriesDB[i].country_code || '').toUpperCase() === 'RU') {
+        ribbonState[i] = 'excl'; break;
+      }
     }
     ribbonSelected = {};
-  }
-  // Helper : reset all countries to possible
-  function resetCountries() {
-    for (var i = 0; i < countriesDB.length; i++) ribbonState[i] = 'poss';
-    ribbonSelected = {};
-  }
-  // Helper : reset all cats to possible
-  function resetCats() {
+    // Cats : tout en Possible (défaut)
     for (var i = 0; i < ALL_CATEGORIES.length; i++) catRibbonState[i] = 'poss';
     catRibbonSelected = {};
-  }
-
-  if (name === 'no-russia') {
-    resetCountries();
-    for (var i = 0; i < countriesDB.length; i++) {
-      if ((countriesDB[i].country_code || '').toUpperCase() === 'RU') { ribbonState[i] = 'excl'; break; }
-    }
-    resetCats();
+    // Settings défaut
     setPresetDefaults();
 
-  } else if (name === 'europe')   { setCountryByList(EUROPEAN_CODES);  resetCats(); setPresetDefaults();
-  } else if (name === 'africa')   { setCountryByList(AFRICAN_CODES);   resetCats(); setPresetDefaults();
-  } else if (name === 'americas') { setCountryByList(AMERICAS_CODES);  resetCats(); setPresetDefaults();
-  } else if (name === 'asia')     { setCountryByList(ASIAN_CODES);     resetCats(); setPresetDefaults();
-  } else if (name === 'oceania')  { setCountryByList(OCEANIA_CODES);   resetCats(); setPresetDefaults();
-  } else if (name === 'top100pib'){ setCountryByList(TOP100_PIB_CODES);resetCats(); setPresetDefaults();
-  } else if (name === 'small')    { setCountryByList(SMALL_COUNTRIES_CODES); resetCats(); setPresetDefaults();
-  } else if (name === 'france-neighbors') { setCountryByList(FRANCE_NEIGHBORS_CODES); resetCats(); setPresetDefaults();
+  } else if (name === 'europe') {
+    // Pays européens (sans Russie) en Possible, reste en Exclus
+    for (var i = 0; i < countriesDB.length; i++) {
+      var code = (countriesDB[i].country_code || '').toUpperCase();
+      ribbonState[i] = (EUROPEAN_CODES.indexOf(code) !== -1) ? 'poss' : 'excl';
+    }
+    ribbonSelected = {};
+    for (var i = 0; i < ALL_CATEGORIES.length; i++) catRibbonState[i] = 'poss';
+    catRibbonSelected = {};
+    setPresetDefaults();
 
   } else if (name === 'sport') {
-    resetCountries();
+    // Pays : tout en Possible
+    for (var i = 0; i < countriesDB.length; i++) ribbonState[i] = 'poss';
+    ribbonSelected = {};
+    // Cats sport → Inclus, reste en Possible
     for (var i = 0; i < ALL_CATEGORIES.length; i++) {
       catRibbonState[i] = (SPORT_CAT_IDS.indexOf(ALL_CATEGORIES[i].id) !== -1) ? 'incl' : 'poss';
     }
@@ -1932,41 +1820,47 @@ function applyPreset(name, btn) {
     setPresetDefaults();
 
   } else if (name === 'chill') {
-    resetCountries(); resetCats();
+    // Pays : tout en Possible
+    for (var i = 0; i < countriesDB.length; i++) ribbonState[i] = 'poss';
+    ribbonSelected = {};
+    // Cats : tout en Possible
+    for (var i = 0; i < ALL_CATEGORIES.length; i++) catRibbonState[i] = 'poss';
+    catRibbonSelected = {};
+    // 8 tours
     document.getElementById('custom-n-slider').value = 8;
     document.getElementById('custom-n-display').textContent = 8;
-    document.getElementById('time-slider').value = 7; selectTimeSlider(7); // ∞
+    // Temps infini (index 7 = 0s)
+    document.getElementById('time-slider').value = 7;
+    selectTimeSlider(7);
+    // Mode Normal
     selectSubModePill('normal');
+    // Ordre Auto
     selectDraftPill('auto');
-
-  } else if (name === 'ultra') {
-    resetCountries(); resetCats();
-    // 16 tours
-    document.getElementById('custom-n-slider').value = 16;
-    ribbonOnSliderChange(16);
-    // 1 seconde (index 0)
-    document.getElementById('time-slider').value = 0; selectTimeSlider(0);
-    // Hardcore
-    selectSubModePill('hardcore');
-    // Ordre par pays
-    selectDraftPill('countries');
   }
 
-  // Re-render
+  // Re-render les deux ribbons
   ribbonRender();
   catRibbonRender();
   ribbonUpdateSlots();
   catRibbonUpdateSlots();
 
-  // Highlight actif
-  document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
+  // Flash visuel — on highlight le preset cliqué
+  document.querySelectorAll('.preset-btn').forEach(function(b) {
+    b.style.borderColor = '';
+    b.style.background  = '';
+  });
+  if (btn) {
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.background  = 'rgba(79,255,176,0.08)';
+  }
 }
 
 function setPresetDefaults() {
+  // 8 tours, 20s, Normal, Auto — valeurs par défaut
   document.getElementById('custom-n-slider').value = 8;
-  ribbonOnSliderChange(8);
-  document.getElementById('time-slider').value = 4; selectTimeSlider(4); // 20s
+  document.getElementById('custom-n-display').textContent = 8;
+  document.getElementById('time-slider').value = 4; // index 4 = 20s
+  selectTimeSlider(4);
   selectSubModePill('normal');
   selectDraftPill('auto');
 }

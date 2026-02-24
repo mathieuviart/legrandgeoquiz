@@ -1101,14 +1101,6 @@ body.reverse-mode #countries-grid { display:grid; }
               <span class="p-icon">💀🔥</span>
               <span class="p-name">Ultra Hardcore</span>
             </button>
-            <button class="preset-btn" onclick="applyPreset('small',this)">
-              <span class="p-icon">🔬</span>
-              <span class="p-name">− 1M hab.</span>
-            </button>
-            <button class="preset-btn" onclick="applyPreset('france-neighbors',this)">
-              <span class="p-icon">🇫🇷🤝</span>
-              <span class="p-name">Voisins France</span>
-            </button>
           </div>
         </div>
       </div>
@@ -1859,21 +1851,6 @@ var TOP100_PIB_CODES = [
   'SD','JO','TN','LY','UG','BH','BO','CM','PY','LV'
 ];
 var SPORT_CAT_IDS = ['classement_fifa_H','classement_fifa_F','classement_rugby_H','classement_bball_M'];
-// Pays < ~1M habitants (rang nb_habitant >= 162 dans la DB)
-var SMALL_COUNTRIES_CODES = [
-  'FJ','KM','GY','BT','SB','MO','LU','ME','SR','CV',
-  'MT','MV','BN','BS','BZ','IS','VU','PF','NC','BB',
-  'ST','WS','CW','LC','GU','KI','GD','FM','JE','TO',
-  'SC','AW','VC','VI','AG','IM','AD','DM','KY','BM',
-  'GG','GL','FO','MP','KN','TC','SX','AS','MH','LI',
-  'MC','SM','MF','BQ','PW','NR','TV'
-];
-// Pays partageant une frontière avec la France (métropole + DOM)
-var FRANCE_NEIGHBORS_CODES = [
-  'BE','LU','DE','CH','IT','MC','AD','ES', // métropole
-  'GB',                                      // tunnel sous la Manche
-  'BR','SR','SX'                             // Guyane française + Saint-Martin
-];
 
 function togglePresets() {
   var toggle = document.getElementById('presets-toggle');
@@ -1920,8 +1897,6 @@ function applyPreset(name, btn) {
   } else if (name === 'asia')     { setCountryByList(ASIAN_CODES);     resetCats(); setPresetDefaults();
   } else if (name === 'oceania')  { setCountryByList(OCEANIA_CODES);   resetCats(); setPresetDefaults();
   } else if (name === 'top100pib'){ setCountryByList(TOP100_PIB_CODES);resetCats(); setPresetDefaults();
-  } else if (name === 'small')    { setCountryByList(SMALL_COUNTRIES_CODES); resetCats(); setPresetDefaults();
-  } else if (name === 'france-neighbors') { setCountryByList(FRANCE_NEIGHBORS_CODES); resetCats(); setPresetDefaults();
 
   } else if (name === 'sport') {
     resetCountries();
