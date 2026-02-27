@@ -1,0 +1,16 @@
+services:
+  web:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - CORS_ORIGINS=http://localhost:8080
