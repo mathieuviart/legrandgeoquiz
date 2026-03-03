@@ -12,7 +12,7 @@
     gtag("config", "G-220WPFE2DM");
   </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1, minimum-scale=1">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LeGrandGeoQuiz">
 <meta name="theme-color" content="#0d0f14">
@@ -320,7 +320,7 @@
             </button>
             <button class="preset-btn" onclick="applyPreset('small',this)">
               <span class="p-icon">🔬</span>
-              <span class="p-name">− 1M hab.</span>
+              <span class="p-name" data-i18n="presetSmallPop"></span>
             </button>
             <button class="preset-btn" onclick="applyPreset('france-neighbors',this)">
               <span class="p-icon">🇫🇷🤝</span>
@@ -503,7 +503,10 @@
 </div>
 
 
-<script src="config.js"></script>
+<script>
+  // Config optionnelle — présente en self-host, absente sur GitHub Pages
+  // L'API par défaut est définie dans daily.js via window.GEOQUIZ_API
+</script>
 <script src="js/translations.js"></script>
 <script src="js/data.js"></script>
 <script src="js/utils.js"></script>
@@ -524,7 +527,7 @@ initApp();
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').catch(function(err) {
+      navigator.serviceWorker.register('/legrandgeoquiz/sw.js').catch(function(err) {
         console.warn('SW registration failed:', err);
       });
     });

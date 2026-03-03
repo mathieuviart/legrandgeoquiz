@@ -2,15 +2,22 @@
 // Disable zoom gestures but allow normal scrolling
 
 (function() {
-  // 1. Prevent double-tap zoom
+  // 1. Prevent double-tap zoom — sans bloquer les clics légitimes
   var lastTouchEnd = 0;
+  var lastTouchX   = 0;
+  var lastTouchY   = 0;
   document.addEventListener('touchend', function(e) {
     var now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      // Double tap detected, prevent zoom
+    var t   = e.changedTouches[0];
+    var dx  = Math.abs(t.clientX - lastTouchX);
+    var dy  = Math.abs(t.clientY - lastTouchY);
+    // Double-tap détecté : même zone (<30px) en moins de 300ms
+    if (now - lastTouchEnd <= 300 && dx < 30 && dy < 30) {
       e.preventDefault();
     }
     lastTouchEnd = now;
+    lastTouchX   = t.clientX;
+    lastTouchY   = t.clientY;
   }, { passive: false });
 
   // 2. Prevent pinch-to-zoom

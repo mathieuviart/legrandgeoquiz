@@ -6,25 +6,25 @@ var CACHE_NAME = 'geoquiz-v1';
 
 // Assets à précacher au moment de l'installation
 var PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.svg',
-  '/country.json',
-  '/css/styles.css',
-  '/js/game.js',
-  '/js/game-end.js',
-  '/js/daily.js',
-  '/js/data.js',
-  '/js/hints.js',
-  '/js/mobile.js',
-  '/js/ribbon.js',
-  '/js/seed.js',
-  '/js/setup.js',
-  '/js/translations.js',
-  '/js/ui-effects.js',
-  '/js/utils.js',
-  '/js/zoom-prevention.js'
+  '/legrandgeoquiz/',
+  '/legrandgeoquiz/index.html',
+  '/legrandgeoquiz/manifest.json',
+  '/legrandgeoquiz/favicon.svg',
+  '/legrandgeoquiz/country.json',
+  '/legrandgeoquiz/css/styles.css',
+  '/legrandgeoquiz/js/game.js',
+  '/legrandgeoquiz/js/game-end.js',
+  '/legrandgeoquiz/js/daily.js',
+  '/legrandgeoquiz/js/data.js',
+  '/legrandgeoquiz/js/hints.js',
+  '/legrandgeoquiz/js/mobile.js',
+  '/legrandgeoquiz/js/ribbon.js',
+  '/legrandgeoquiz/js/seed.js',
+  '/legrandgeoquiz/js/setup.js',
+  '/legrandgeoquiz/js/translations.js',
+  '/legrandgeoquiz/js/ui-effects.js',
+  '/legrandgeoquiz/js/utils.js',
+  '/legrandgeoquiz/js/zoom-prevention.js'
 ];
 
 // ── Install : précacher tous les assets du jeu ────────────────────────────────
@@ -92,7 +92,7 @@ self.addEventListener('fetch', function(event) {
       }).catch(function() {
         // Fallback ultime offline : index.html pour les navigations
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('/legrandgeoquiz/index.html');
         }
       });
     })
