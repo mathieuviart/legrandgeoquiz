@@ -149,15 +149,22 @@ function _shuffle(arr, rng) {
 // ── Fin de partie Daily : intercepte showEndPanel ─────────────────────────────
 var _origShowEndPanel = null;
 
-function skipDailySubmit() {
-  var overlay = document.getElementById('daily-submit-overlay');
-  if (overlay) overlay.style.display = 'none';
-  _setDailyPlayed();
-  // leave isDailyMode true until after the leaderboard opens, just in case
-  setTimeout(function() {
-    isDailyMode = false;
-    openLeaderboard();
-  }, 200);
+// ── Patch fin de partie pour le Daily ────────────────────────────────────────
+function _dailyShowEndPanel() {
+  // Appeler le panel de fin normal d'abord
+  if (_origShowEndPanel) _origShowEndPanel();
+
+  // Si on est en mode daily, capturer le score et ouvrir la modal submit
+  if (isDailyMode) {
+    dailyScore = totalScore;
+    // Masquer les éléments anti-triche
+    var optBlock = document.getElementById('opt-block');
+    if (optBlock) optBlock.style.display = 'none';
+    var seedBox = document.getElementById('seed-display');
+    if (seedBox) seedBox.style.display = 'none';
+    // Ouvrir la modal de soumission
+    setTimeout(openSubmitModal, 400);
+  }
 }
 
 // ── Modal submit ──────────────────────────────────────────────────────────────

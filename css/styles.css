@@ -81,27 +81,41 @@ body {
   font-family: 'Syne', sans-serif;
   background: var(--bg); color: var(--text);
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  /* respect iOS top inset so header isn't hidden under dynamic island */
-  padding: calc(20px + env(safe-area-inset-top)) 20px 20px 20px;
-  /* Prevent zoom but allow scrolling */
+  padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)) 20px;
   touch-action: manipulation;
   -webkit-user-scalable: no;
   -webkit-touch-callout: none;
 }
 
-/* tiny easter‑egg hidden near notch */
-body::after {
-  content: "LeGrandGeoQuiz";
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.6em;
-  color: var(--muted);
-  opacity: 0.15;
-  pointer-events: none;
-  z-index: 100;
+/* ── Easter egg : texte visible dans le gap Dynamic Island ────────────────── */
+/* Visible uniquement sur iPhones standalone avec Dynamic Island              */
+/* Le gap mesure ~12px entre le bord écran et le bas de l'île                 */
+@media (display-mode: standalone) {
+  body::after {
+    content: "◈ GeoQuiz";
+    position: fixed;
+    /* Centre verticalement dans le gap (~12px), soit ~top:4px               */
+    top: 4px;
+    /* Centré sur l'écran, la Dynamic Island est elle aussi centrée           */
+    left: 50%;
+    transform: translateX(-50%);
+    /* Taille max pour tenir dans le gap de 12px de hauteur                  */
+    font-size: 7px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--muted);
+    /* Subtil mais lisible dans ce contexte très petit                        */
+    opacity: 0.55;
+    pointer-events: none;
+    /* Au-dessus de tout sauf les overlays critiques                         */
+    z-index: 9999;
+    /* Empêche le texte de déborder sur les côtés de l'île                   */
+    white-space: nowrap;
+  }
 }
+
 body::before {
   content: ''; position: fixed; inset: 0;
   background-image: linear-gradient(rgba(79,255,176,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(79,255,176,0.03) 1px,transparent 1px);
@@ -1077,14 +1091,21 @@ body.reverse-mode #countries-grid { display:grid; }
 @media (max-width: 540px) {
 
   /* ── Layout global ────────────────────────────────── */
-  body { padding: 8px; align-items: flex-start; }
+  body {
+  padding: calc(env(safe-area-inset-top, 8px) + 8px) 8px calc(env(safe-area-inset-bottom, 8px) + 8px) 8px;
+  align-items: flex-start;
+  }
   #app  { max-width: 100%; }
   .panel { padding: 18px 14px; border-radius: 12px; }
   /* allow page scrolling instead of inner scroll on custom panel */
   #panel-custom { padding: 14px 12px; max-height: none; overflow-y: visible; }
 
-  /* Lang switcher : plus compact, ne déborde pas */
-  #lang-switcher { top: 8px; right: 8px; padding: 3px; }
+  #lang-switcher {
+    top: calc(env(safe-area-inset-top, 8px) + 8px);
+    right: 8px;
+    padding: 3px;
+  }
+
   .lang-btn { padding: 4px 8px; font-size: 0.68em; }
 
   /* Titres */
@@ -1314,7 +1335,7 @@ body.reverse-mode .cat-sort-btn {
   transition: transform 0.15s, background 0.15s;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-}
+}}
 .reverse-sort-btn:hover { transform: scale(1.1); background: rgba(79, 255, 176, 0.18); }
 
 /* ─── TOOLTIP ──────────────────────────────────────────────────────────────── */
@@ -1409,28 +1430,23 @@ body.reverse-mode .cat-sort-btn {
 
 /* ── iOS-specific enhancements ───────────────────────────── */
 @supports (padding: max(0px)) {
-  /* Safe area support for notched devices */
   body {
-    /* Ensure smooth rendering on iOS */
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }
-  
-  /* Improve input/button rendering on iOS */
+
   input, button, select, textarea {
     font-size: 16px; /* Prevents auto-zoom on iOS input focus */
     -webkit-appearance: none;
     appearance: none;
-    border-radius: 0;
+    /* NE PAS mettre border-radius: 0 ici — ça écrase tous les boutons du jeu */
   }
-  
-  /* Ensure buttons don't have default iOS styling */
+
   button {
     -webkit-appearance: none;
     appearance: none;
-    border: none;
-    background: none;
     cursor: pointer;
+    /* NE PAS mettre border: none ni background: none ici */
   }
 }
 
