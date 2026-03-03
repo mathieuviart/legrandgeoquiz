@@ -27,8 +27,12 @@ async function initDailyBlock() {
       }
     }
   } catch(e) {
-    // Pas de connexion ? On laisse jouer, le serveur rejettera si besoin
     console.warn('Daily check failed (offline?)', e);
+    // Afficher le message hors-ligne
+    var btn = document.getElementById('btn-daily');
+    var offlineMsg = document.getElementById('daily-offline-msg');
+    if (btn) { btn.disabled = true; }
+    if (offlineMsg) { offlineMsg.classList.remove('hidden'); }
   }
 }
 

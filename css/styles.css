@@ -92,27 +92,27 @@ body {
 /* Le gap mesure ~12px entre le bord écran et le bas de l'île                 */
 @media (display-mode: standalone) {
   body::after {
-    content: "◈ GeoQuiz";
+    content: "développé par Mathieu VIART";
     position: fixed;
-    /* Centre verticalement dans le gap (~12px), soit ~top:4px               */
     top: 4px;
-    /* Centré sur l'écran, la Dynamic Island est elle aussi centrée           */
     left: 50%;
     transform: translateX(-50%);
-    /* Taille max pour tenir dans le gap de 12px de hauteur                  */
     font-size: 7px;
     line-height: 1;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     font-family: 'DM Mono', monospace;
     font-weight: 500;
-    color: var(--muted);
-    /* Subtil mais lisible dans ce contexte très petit                        */
-    opacity: 0.55;
     pointer-events: none;
-    /* Au-dessus de tout sauf les overlays critiques                         */
     z-index: 9999;
-    /* Empêche le texte de déborder sur les côtés de l'île                   */
     white-space: nowrap;
+    /* Animation pulsation blanc */
+    animation: egg-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes egg-pulse {
+    0%   { color: var(--muted); opacity: 0.45; }
+    50%  { color: #ffffff;      opacity: 0.85; }
+    100% { color: var(--muted); opacity: 0.45; }
   }
 }
 
@@ -746,7 +746,20 @@ body.reverse-mode #hint-panel { display:none !important; }
 body.reverse-mode .cats-grid { display:none !important; }
 
 .reverse-cat-icon { font-size:2.4em; line-height:1; margin-bottom:6px; }
-.reverse-cat-name { font-family:'Syne',sans-serif; font-size:1.15em; font-weight:700; color:#f5c842; margin-bottom:4px; }
+.reverse-cat-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #f5c842;
+  margin-bottom: 4px;
+  
+  /* Sécurité pour la troncature */
+  display: block; /* ou inline-block selon ton design */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .reverse-cat-desc { font-family:'DM Mono',monospace; font-size:0.68em; color:var(--muted); line-height:1.5; margin-bottom:8px; }
 .reverse-cat-info-row { display:flex; align-items:center; justify-content:center; gap:8px; }
 .reverse-info-toggle {
@@ -1099,6 +1112,8 @@ body.reverse-mode #countries-grid { display:grid; }
   .panel { padding: 18px 14px; border-radius: 12px; }
   /* allow page scrolling instead of inner scroll on custom panel */
   #panel-custom { padding: 14px 12px; max-height: none; overflow-y: visible; }
+
+  .reverse-cat-name { font-size: 0.95em; }
 
   #lang-switcher {
     top: calc(env(safe-area-inset-top, 8px) + 8px);

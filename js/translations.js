@@ -40,6 +40,7 @@ var TRANSLATIONS = {
     reverseTurn:            'Catégorie',
     btnNormal:              'Normale',
     btnHardcore:            'Hardcore',
+    dailyOffline:           '📵 Mode Hors Ligne',
     score:                  'Score',
     time:                   'Temps',
     turn:                   'Tour',
@@ -208,6 +209,7 @@ var TRANSLATIONS = {
     reverseTurn:            'Category',
     btnNormal:              'Normal',
     btnHardcore:            'Hardcore',
+    dailyOffline:           '📵 Offline Mode',
     score:                  'Score',
     time:                   'Time',
     turn:                   'Round',
@@ -376,6 +378,7 @@ var TRANSLATIONS = {
     reverseTurn:            'Категорія',
     btnNormal:              'Нормальна',
     btnHardcore:            'Hardcore',
+    dailyOffline:           '📵 Офлайн режим',
     score:                  'Рахунок',
     time:                   'Час',
     turn:                   'Хід',
@@ -544,6 +547,7 @@ var TRANSLATIONS = {
     reverseTurn:            'Kategorie',
     btnNormal:              'Normal',
     btnHardcore:            'Hardcore',
+    dailyOffline:           '📵 Offline-Modus',
     score:                  'Score',
     time:                   'Zeit',
     turn:                   'Runde',
@@ -710,3 +714,4 @@ function applyTranslations() {
     el.title = t(el.dataset.i18nTitle);
   });
 }
+
