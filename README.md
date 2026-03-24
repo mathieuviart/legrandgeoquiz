@@ -1,13 +1,32 @@
 # LeGrandGeoQuiz
 
-> Presets for custom mode are now automatically computed at runtime from the
-> country descriptions. Previously a set of hard-coded arrays (e.g.
-> `EUROPEAN_CODES`, `ISLANDS_CODES`) were required; they have been regenerated
-> dynamically using keywords in `js/hints.js`. This ensures all buttons work even
-> after data updates.
+🌍 **Play instantly:** The game is hosted on GitHub Pages and is available for all devices without any installation at:  
+👉 **[mathieuviart.github.io/legrandgeoquiz/](https://mathieuviart.github.io/legrandgeoquiz/)**
 
-LeGrandGeoQuiz
+LeGrandGeoQuiz is now available as a **Progressive Web App (PWA)**, meaning you can install it on your device and play it **100% offline**.
 
+To play the game without an internet connection on your device:
+## 📱 Installation & Offline Play
+
+Thanks to the `manifest.json` integration, you can add the game to your home screen or desktop for a native app experience.
+
+### 🍏 iOS (iPhone & iPad)
+1. Open **Safari** and navigate to the game URL.
+2. Tap the **Share** button (square with an up arrow).
+3. Scroll down and select **"Add to Home Screen"**.
+4. Open the new icon from your home screen while online once to cache the game.
+
+### 🤖 Android
+1. Open **Chrome** and navigate to the game URL.
+2. Tap the **three dots (⋮)** in the top right corner.
+3. Select **"Install app"** (or "Add to Home screen").
+4. The game will now appear in your app drawer like a regular app.
+
+### 💻 Desktop (Windows, Mac, Linux)
+1. Open the game in **Chrome** or **Edge**.
+2. Look at the right side of the **Address Bar** for a small icon that looks like a computer with an arrow (or a "plus" sign).
+3. Click **"Install"**.
+4. The game will open in its own standalone window and create a desktop shortcut.
 A strategic geography quiz game — 8 countries, 8 categories, the lowest score wins.
 
 **Languages:** FR | EN | UA | DE
@@ -33,7 +52,7 @@ A strategic geography quiz game — 8 countries, 8 categories, the lowest score 
 
 ## Categories
 
-35+ statistical categories sourced from official data, including:
+40+ statistical categories sourced from official data, including:
 
 - GDP (Total & per capita), Population, Population density
 - Peace index, Corruption index, Happiness index
