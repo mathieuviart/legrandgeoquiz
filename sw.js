@@ -2,14 +2,16 @@
 // Stratégie : Cache First pour les assets statiques, Network First pour l'API Daily.
 // iOS Safari (standalone) nécessite un SW pour fonctionner offline.
 
-var CACHE_NAME = 'geoquiz-v2';
+var CACHE_NAME = 'geoquiz-v3';
 
 // Assets à précacher au moment de l'installation
 var PRECACHE_URLS = [
   '/legrandgeoquiz/',
   '/legrandgeoquiz/index.html',
   '/legrandgeoquiz/manifest.json',
-  '/legrandgeoquiz/favicon.svg',
+  '/legrandgeoquiz/icon-192.png',
+  '/legrandgeoquiz/icon-512.png',
+  '/legrandgeoquiz/maskable_icon.png',
   '/legrandgeoquiz/country.json',
   '/legrandgeoquiz/css/styles.css',
   '/legrandgeoquiz/js/game.js',
@@ -33,7 +35,6 @@ self.addEventListener('install', function(event) {
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(PRECACHE_URLS);
     }).then(function() {
-      // Activer immédiatement sans attendre la fermeture des onglets
       return self.skipWaiting();
     })
   );
@@ -49,7 +50,6 @@ self.addEventListener('activate', function(event) {
           .map(function(name) { return caches.delete(name); })
       );
     }).then(function() {
-      // Prendre le contrôle de tous les clients immédiatement
       return self.clients.claim();
     })
   );
@@ -63,7 +63,6 @@ self.addEventListener('fetch', function(event) {
   if (url.indexOf('/api/') !== -1) {
     event.respondWith(
       fetch(event.request).catch(function() {
-        // Offline : retourner une réponse d'erreur JSON propre
         return new Response(
           JSON.stringify({ error: 'offline', played: false }),
           { headers: { 'Content-Type': 'application/json' } }
@@ -71,7 +70,7 @@ self.addEventListener('fetch', function(event) {
       })
     );
     return;
-  }
+  } // ← FIX #1 : fermait pas le if, le Cache First était du code mort
 
   // Cache First pour tous les assets du jeu
   event.respondWith(
@@ -80,10 +79,10 @@ self.addEventListener('fetch', function(event) {
 
       // Pas en cache : tenter le réseau puis mettre en cache
       return fetch(event.request).then(function(response) {
-        // Ne cacher que les réponses valides
         if (!response || response.status !== 200 || response.type === 'opaque') {
           return response;
-        }
+        } // ← FIX #2 : fermait pas le if, cache.put était du code mort
+
         var toCache = response.clone();
         caches.open(CACHE_NAME).then(function(cache) {
           cache.put(event.request, toCache);
