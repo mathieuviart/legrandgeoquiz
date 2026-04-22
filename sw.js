@@ -19,6 +19,7 @@ var PRECACHE_URLS = [
   '/legrandgeoquiz/js/daily.js',
   '/legrandgeoquiz/js/data.js',
   '/legrandgeoquiz/js/hints.js',
+  '/legrandgeoquiz/js/loader-planet.js',
   '/legrandgeoquiz/js/mobile.js',
   '/legrandgeoquiz/js/ribbon.js',
   '/legrandgeoquiz/js/seed.js',
