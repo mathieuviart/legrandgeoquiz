@@ -158,7 +158,6 @@ var TRANSLATIONS = {
     copiedUrl:              'URL copiée !',
     // ── Presets ─────────────────────────────────────────────────────────────
     presetHeader:           'Préréglages',
-    presetNoRussia:         'Sans la Russie',
     presetEuropean:         'Européen',
     presetAfrican:          'Africain',
     presetAmericas:         'Amériques',
@@ -333,7 +332,6 @@ var TRANSLATIONS = {
     copiedUrl:              'URL copied!',
     // ── Presets ─────────────────────────────────────────────────────────────
     presetHeader:           'Presets',
-    presetNoRussia:         'No Russia',
     presetEuropean:         'European',
     presetAfrican:          'African',
     presetAmericas:         'Americas',
@@ -508,7 +506,6 @@ var TRANSLATIONS = {
     copiedUrl:              '✓ Посилання скопійовано!',
     // ── Presets ─────────────────────────────────────────────────────────────
     presetHeader:           'Шаблони',
-    presetNoRussia:         'Без Росії',
     presetEuropean:         'Європейський',
     presetAfrican:          'Африканський',
     presetAmericas:         'Америка',
@@ -684,7 +681,6 @@ var TRANSLATIONS = {
     copiedUrl:              'URL kopiert!',
     // ── Presets ─────────────────────────────────────────────────────────────
     presetHeader:           'Vorlagen',
-    presetNoRussia:         'Ohne Russland',
     presetEuropean:         'Europäisch',
     presetAfrican:          'Afrikanisch',
     presetAmericas:         'Amerika',
