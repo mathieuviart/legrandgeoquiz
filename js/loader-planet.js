@@ -55,13 +55,6 @@
       '#lp-btn:focus{outline:none;}',
       '#lp-btn.lp-loading{animation:lpPulse 2.4s ease-in-out infinite;}',
       '#lp-btn.lp-done{animation:lpBoom 0.5s cubic-bezier(.34,1.56,.64,1) both;}',
-      '#lp-pct-lbl{',
-        'position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);',
-        'font-family:"DM Mono",monospace;font-size:0.52em;letter-spacing:.04em;',
-        'color:#606880;white-space:nowrap;pointer-events:none;',
-        'transition:color 0.4s;',
-      '}',
-      '#lp-btn.lp-done #lp-pct-lbl{color:#4fffb0;}',
       '#lp-panel{',
         'background:#161920;border:1px solid #2a2f42;border-radius:12px;',
         'padding:12px 16px;min-width:180px;pointer-events:all;',
@@ -142,8 +135,8 @@
           ' transform="rotate(-90 22 22)"/>' +
         /* Bordure planète */
         '<circle cx="22" cy="22" r="16" fill="none" stroke="#2a2f42" stroke-width="1"/>' +
-        /* Label % */
-        '<text id="lp-pct-lbl" x="22" y="27" text-anchor="middle"' +
+        /* Label % — centré dans le SVG via x/y + dominant-baseline */
+        '<text id="lp-pct-lbl" x="22" y="22" text-anchor="middle" dominant-baseline="central"' +
           ' font-family="DM Mono,monospace" font-size="7" fill="#606880">0%</text>' +
       '</svg>';
 
@@ -178,10 +171,10 @@
 
   /* ── 6. Mise à jour visuelle ─────────────────────────────────────────────── */
   function updateUI() {
-    var fillA   = document.getElementById('lp-fill-a');
-    var fillB   = document.getElementById('lp-fill-b');
-    var arc     = document.getElementById('lp-arc');
-    var pctLbl  = document.getElementById('lp-pct-lbl');
+    var fillA  = document.getElementById('lp-fill-a');
+    var fillB  = document.getElementById('lp-fill-b');
+    var arc    = document.getElementById('lp-arc');
+    var pctLbl = document.getElementById('lp-pct-lbl');
     var barFill = document.getElementById('lp-bar-fill');
     if (!fillA || !arc) return;
 
@@ -200,9 +193,14 @@
     arc.setAttribute('stroke-dasharray', drawn.toFixed(1) + ' ' + circ.toFixed(1));
     arc.setAttribute('stroke', color);
 
-    if (pctLbl) pctLbl.textContent = _pct + '%';
+    /* Label % — setAttribute fill pour SVG <text> */
+    if (pctLbl) {
+      pctLbl.textContent = _pct + '%';
+      pctLbl.setAttribute('fill', color);
+    }
+
     if (barFill) {
-      barFill.style.width      = _pct + '%';
+      barFill.style.width = _pct + '%';
       barFill.style.background = color;
     }
   }
@@ -221,7 +219,7 @@
 
       updateUI();
       checkAllDone();
-    }
+    },
   };
 
   /* ── 8. Vérifier si tout est chargé ─────────────────────────────────────── */
@@ -246,7 +244,7 @@
       var wrap = document.getElementById('lp-wrap');
       if (wrap) {
         wrap.style.transition = 'opacity 0.6s ease';
-        wrap.style.opacity    = '0';
+        wrap.style.opacity = '0';
         setTimeout(function () { if (wrap) wrap.style.display = 'none'; }, 650);
       }
     }, 8000);
